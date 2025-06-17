@@ -1,39 +1,42 @@
 import { Request } from 'express';
+import { Document } from 'mongoose';
 
-export interface IUser {
+export interface IUser extends Document {
   _id: string;
+  name: string;
   email: string;
   password: string;
-  name: string;
   isHost: boolean;
+  avatar?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface IListing {
+export interface IListing extends Document {
   _id: string;
   title: string;
   description: string;
-  location: string;
   price: number;
+  location: {
+    address: string;
+    city: string;
+    country: string;
+    coordinates: [number, number];
+  };
   images: string[];
-  host: string | IUser;
   amenities: string[];
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  host: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface IBooking {
+export interface IBooking extends Document {
   _id: string;
-  listing: string | IListing;
-  user: string | IUser;
+  listing: string;
+  guest: string;
   startDate: Date;
   endDate: Date;
   totalPrice: number;
@@ -44,24 +47,8 @@ export interface IBooking {
 
 export interface AuthRequest extends Request {
   user?: {
-    userId: string;
+    id: string;
     email: string;
     isHost: boolean;
   };
-}
-
-export interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-  error?: string;
-}
-
-export interface SearchFilters {
-  location?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  startDate?: string;
-  endDate?: string;
-  guests?: number;
 }

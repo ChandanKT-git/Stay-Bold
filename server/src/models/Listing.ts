@@ -1,9 +1,7 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { IListing } from '../types/index.js';
+import mongoose, { Schema } from 'mongoose';
+import { IListing } from '../types';
 
-interface IListingDocument extends Omit<IListing, '_id'>, Document {}
-
-const listingSchema = new Schema<IListingDocument>({
+const listingSchema = new Schema<IListing>({
   title: {
     type: String,
     required: true,
@@ -13,24 +11,39 @@ const listingSchema = new Schema<IListingDocument>({
     type: String,
     required: true
   },
-  location: {
-    type: String,
-    required: true
-  },
   price: {
     type: Number,
     required: true,
     min: 0
   },
+  location: {
+    address: {
+      type: String,
+      required: true
+    },
+    city: {
+      type: String,
+      required: true
+    },
+    country: {
+      type: String,
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+      validate: {
+        validator: function(v: number[]) {
+          return v.length === 2;
+        },
+        message: 'Coordinates must be an array of [longitude, latitude]'
+      }
+    }
+  },
   images: [{
     type: String,
     required: true
   }],
-  host: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
   amenities: [{
     type: String
   }],
@@ -49,22 +62,17 @@ const listingSchema = new Schema<IListingDocument>({
     required: true,
     min: 0
   },
-  coordinates: {
-    lat: {
-      type: Number,
-      required: true
-    },
-    lng: {
-      type: Number,
-      required: true
-    }
+  host: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
   timestamps: true
 });
 
-listingSchema.index({ location: 'text', title: 'text', description: 'text' });
+listingSchema.index({ 'location.coordinates': '2dsphere' });
 listingSchema.index({ price: 1 });
-listingSchema.index({ 'coordinates.lat': 1, 'coordinates.lng': 1 });
+listingSchema.index({ maxGuests: 1 });
 
-export default mongoose.model<IListingDocument>('Listing', listingSchema);
+export default mongoose.model<IListing>('Listing', listingSchema);

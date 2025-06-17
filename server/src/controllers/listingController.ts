@@ -1,21 +1,23 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import Listing from '../models/Listing.js';
-import Booking from '../models/Booking.js';
-import { AuthRequest, ApiResponse, SearchFilters } from '../types/index.js';
+import Listing from '../models/Listing';
+import { AuthRequest } from '../types';
 
 export const createListingValidation = [
   body('title').trim().isLength({ min: 5 }).withMessage('Title must be at least 5 characters'),
   body('description').trim().isLength({ min: 20 }).withMessage('Description must be at least 20 characters'),
-  body('location').trim().notEmpty().withMessage('Location is required'),
-  body('price').isFloat({ min: 1 }).withMessage('Price must be a positive number'),
+  body('price').isNumeric().isFloat({ min: 1 }).withMessage('Price must be a positive number'),
+  body('location.address').notEmpty().withMessage('Address is required'),
+  body('location.city').notEmpty().withMessage('City is required'),
+  body('location.country').notEmpty().withMessage('Country is required'),
+  body('location.coordinates').isArray({ min: 2, max: 2 }).withMessage('Coordinates must be [longitude, latitude]'),
   body('images').isArray({ min: 1 }).withMessage('At least one image is required'),
   body('maxGuests').isInt({ min: 1 }).withMessage('Max guests must be at least 1'),
-  body('bedrooms').isInt({ min: 0 }).withMessage('Bedrooms must be a non-negative number'),
-  body('bathrooms').isFloat({ min: 0 }).withMessage('Bathrooms must be a non-negative number')
+  body('bedrooms').isInt({ min: 0 }).withMessage('Bedrooms must be 0 or more'),
+  body('bathrooms').isNumeric().isFloat({ min: 0 }).withMessage('Bathrooms must be 0 or more'),
 ];
 
-export const getListings = async (req: Request, res: Response<ApiResponse>) => {
+export const getListings = async (req: AuthRequest, res: Response) => {
   try {
     const {
       location,
@@ -26,238 +28,151 @@ export const getListings = async (req: Request, res: Response<ApiResponse>) => {
       guests,
       page = 1,
       limit = 12
-    } = req.query as SearchFilters & { page?: string; limit?: string };
+    } = req.query;
 
     const query: any = {};
-    const priceFilter: any = {};
 
-    // Location search
     if (location) {
-      query.$text = { $search: location };
+      query.$or = [
+        { 'location.city': { $regex: location, $options: 'i' } },
+        { 'location.country': { $regex: location, $options: 'i' } },
+        { 'location.address': { $regex: location, $options: 'i' } }
+      ];
     }
 
-    // Price filters
-    if (minPrice) priceFilter.$gte = Number(minPrice);
-    if (maxPrice) priceFilter.$lte = Number(maxPrice);
-    if (Object.keys(priceFilter).length > 0) {
-      query.price = priceFilter;
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
-    // Guest capacity
     if (guests) {
       query.maxGuests = { $gte: Number(guests) };
     }
 
     const skip = (Number(page) - 1) * Number(limit);
 
-    let listings = await Listing.find(query)
-      .populate('host', 'name email')
-      .sort({ createdAt: -1 })
+    const listings = await Listing.find(query)
+      .populate('host', 'name avatar')
       .skip(skip)
-      .limit(Number(limit));
-
-    // Filter out listings that are booked for the requested dates
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-
-      const bookedListings = await Booking.find({
-        listing: { $in: listings.map(l => l._id) },
-        status: { $ne: 'cancelled' },
-        $or: [
-          { startDate: { $lte: end }, endDate: { $gte: start } }
-        ]
-      }).distinct('listing');
-
-      listings = listings.filter(listing => 
-        !bookedListings.some(bookedId => bookedId.toString() === listing._id.toString())
-      );
-    }
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
 
     const total = await Listing.countDocuments(query);
 
     res.json({
-      success: true,
-      message: 'Listings retrieved successfully',
-      data: {
-        listings,
-        pagination: {
-          currentPage: Number(page),
-          totalPages: Math.ceil(total / Number(limit)),
-          totalListings: total,
-          hasNext: Number(page) * Number(limit) < total,
-          hasPrev: Number(page) > 1
-        }
+      listings,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit))
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve listings',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Get listings error:', error);
+    res.status(500).json({ message: 'Server error fetching listings' });
   }
 };
 
-export const getListingById = async (req: Request, res: Response<ApiResponse>) => {
+export const getListingById = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const listing = await Listing.findById(id).populate('host', 'name email');
+    const listing = await Listing.findById(req.params.id).populate('host', 'name avatar email');
     
     if (!listing) {
-      return res.status(404).json({
-        success: false,
-        message: 'Listing not found'
-      });
+      return res.status(404).json({ message: 'Listing not found' });
     }
 
-    // Get existing bookings for calendar
-    const bookings = await Booking.find({
-      listing: id,
-      status: { $ne: 'cancelled' }
-    }).select('startDate endDate');
-
-    res.json({
-      success: true,
-      message: 'Listing retrieved successfully',
-      data: {
-        listing,
-        bookedDates: bookings
-      }
-    });
+    res.json(listing);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve listing',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Get listing error:', error);
+    res.status(500).json({ message: 'Server error fetching listing' });
   }
 };
 
-export const createListing = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const createListing = async (req: AuthRequest, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        error: errors.array().map(err => err.msg).join(', ')
-      });
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const listingData = {
+    const listing = new Listing({
       ...req.body,
-      host: req.user?.userId
-    };
+      host: req.user!.id
+    });
 
-    const listing = new Listing(listingData);
     await listing.save();
-    await listing.populate('host', 'name email');
+    await listing.populate('host', 'name avatar');
 
     res.status(201).json({
-      success: true,
       message: 'Listing created successfully',
-      data: { listing }
+      listing
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create listing',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Create listing error:', error);
+    res.status(500).json({ message: 'Server error creating listing' });
   }
 };
 
-export const updateListing = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const updateListing = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
-
+    const listing = await Listing.findById(req.params.id);
+    
     if (!listing) {
-      return res.status(404).json({
-        success: false,
-        message: 'Listing not found'
-      });
+      return res.status(404).json({ message: 'Listing not found' });
     }
 
-    if (listing.host.toString() !== req.user?.userId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to update this listing'
-      });
+    if (listing.host.toString() !== req.user!.id) {
+      return res.status(403).json({ message: 'Not authorized to update this listing' });
     }
 
     const updatedListing = await Listing.findByIdAndUpdate(
-      id,
+      req.params.id,
       req.body,
       { new: true, runValidators: true }
-    ).populate('host', 'name email');
+    ).populate('host', 'name avatar');
 
     res.json({
-      success: true,
       message: 'Listing updated successfully',
-      data: { listing: updatedListing }
+      listing: updatedListing
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update listing',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Update listing error:', error);
+    res.status(500).json({ message: 'Server error updating listing' });
   }
 };
 
-export const deleteListing = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const deleteListing = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
-
+    const listing = await Listing.findById(req.params.id);
+    
     if (!listing) {
-      return res.status(404).json({
-        success: false,
-        message: 'Listing not found'
-      });
+      return res.status(404).json({ message: 'Listing not found' });
     }
 
-    if (listing.host.toString() !== req.user?.userId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to delete this listing'
-      });
+    if (listing.host.toString() !== req.user!.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this listing' });
     }
 
-    await Listing.findByIdAndDelete(id);
+    await Listing.findByIdAndDelete(req.params.id);
 
-    res.json({
-      success: true,
-      message: 'Listing deleted successfully'
-    });
+    res.json({ message: 'Listing deleted successfully' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete listing',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Delete listing error:', error);
+    res.status(500).json({ message: 'Server error deleting listing' });
   }
 };
 
-export const getHostListings = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const getHostListings = async (req: AuthRequest, res: Response) => {
   try {
-    const listings = await Listing.find({ host: req.user?.userId })
-      .populate('host', 'name email')
+    const listings = await Listing.find({ host: req.user!.id })
+      .populate('host', 'name avatar')
       .sort({ createdAt: -1 });
 
-    res.json({
-      success: true,
-      message: 'Host listings retrieved successfully',
-      data: { listings }
-    });
+    res.json(listings);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve host listings',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Get host listings error:', error);
+    res.status(500).json({ message: 'Server error fetching host listings' });
   }
 };

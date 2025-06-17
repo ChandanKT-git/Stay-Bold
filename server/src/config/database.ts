@@ -1,16 +1,12 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-const connectDB = async (): Promise<void> => {
+export const connectDB = async (): Promise<void> => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/stayfinder');
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stayfinder';
+    await mongoose.connect(mongoURI);
+    console.log('MongoDB connected successfully');
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error('MongoDB connection error:', error);
     process.exit(1);
   }
 };
-
-export default connectDB;

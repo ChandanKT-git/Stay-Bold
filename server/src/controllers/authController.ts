@@ -1,125 +1,101 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
-import User from '../models/User.js';
-import { ApiResponse } from '../types/index.js';
+import User from '../models/User';
 
-const generateToken = (userId: string, email: string, isHost: boolean): string => {
+const generateToken = (userId: string, email: string, isHost: boolean) => {
   return jwt.sign(
-    { userId, email, isHost },
-    process.env.JWT_SECRET || 'fallback_secret',
+    { id: userId, email, isHost },
+    process.env.JWT_SECRET!,
     { expiresIn: '7d' }
   );
 };
 
 export const registerValidation = [
-  body('email').isEmail().normalizeEmail(),
+  body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
+  body('email').isEmail().withMessage('Please provide a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters')
 ];
 
 export const loginValidation = [
-  body('email').isEmail().normalizeEmail(),
-  body('password').notEmpty().withMessage('Password is required')
+  body('email').isEmail().withMessage('Please provide a valid email'),
+  body('password').notEmpty().withMessage('Password is required'),
 ];
 
-export const register = async (req: Request, res: Response<ApiResponse>) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        error: errors.array().map(err => err.msg).join(', ')
-      });
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password, name, isHost = false } = req.body;
+    const { name, email, password, isHost } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User already exists with this email'
-      });
+      return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    const user = new User({ email, password, name, isHost });
+    const user = new User({
+      name,
+      email,
+      password,
+      isHost: isHost || false
+    });
+
     await user.save();
 
     const token = generateToken(user._id.toString(), user.email, user.isHost);
 
     res.status(201).json({
-      success: true,
       message: 'User registered successfully',
-      data: {
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          isHost: user.isHost
-        },
-        token
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isHost: user.isHost
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Registration failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
-export const login = async (req: Request, res: Response<ApiResponse>) => {
+export const login = async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        error: errors.array().map(err => err.msg).join(', ')
-      });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const token = generateToken(user._id.toString(), user.email, user.isHost);
 
     res.json({
-      success: true,
       message: 'Login successful',
-      data: {
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          isHost: user.isHost
-        },
-        token
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isHost: user.isHost
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Login failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error during login' });
   }
 };

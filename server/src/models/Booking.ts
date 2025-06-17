@@ -1,15 +1,13 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { IBooking } from '../types/index.js';
+import mongoose, { Schema } from 'mongoose';
+import { IBooking } from '../types';
 
-interface IBookingDocument extends Omit<IBooking, '_id'>, Document {}
-
-const bookingSchema = new Schema<IBookingDocument>({
+const bookingSchema = new Schema<IBooking>({
   listing: {
     type: Schema.Types.ObjectId,
     ref: 'Listing',
     required: true
   },
-  user: {
+  guest: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -20,7 +18,13 @@ const bookingSchema = new Schema<IBookingDocument>({
   },
   endDate: {
     type: Date,
-    required: true
+    required: true,
+    validate: {
+      validator: function(this: IBooking, value: Date) {
+        return value > this.startDate;
+      },
+      message: 'End date must be after start date'
+    }
   },
   totalPrice: {
     type: Number,
@@ -37,6 +41,6 @@ const bookingSchema = new Schema<IBookingDocument>({
 });
 
 bookingSchema.index({ listing: 1, startDate: 1, endDate: 1 });
-bookingSchema.index({ user: 1 });
+bookingSchema.index({ guest: 1 });
 
-export default mongoose.model<IBookingDocument>('Booking', bookingSchema);
+export default mongoose.model<IBooking>('Booking', bookingSchema);

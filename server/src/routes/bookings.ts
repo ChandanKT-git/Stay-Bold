@@ -1,14 +1,14 @@
-import express from 'express';
+import { Router } from 'express';
 import {
   createBooking,
   getUserBookings,
   getHostBookings,
   cancelBooking,
   createBookingValidation
-} from '../controllers/bookingController.js';
-import { authenticateToken, requireHost } from '../middleware/auth.js';
+} from '../controllers/bookingController';
+import { authenticateToken, requireHost } from '../middleware/auth';
 
-const router = express.Router();
+const router = Router();
 
 router.post('/', authenticateToken, createBookingValidation, createBooking);
 router.get('/user', authenticateToken, getUserBookings);

@@ -1,56 +1,42 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import Booking from '../models/Booking.js';
-import Listing from '../models/Listing.js';
-import { AuthRequest, ApiResponse } from '../types/index.js';
+import Booking from '../models/Booking';
+import Listing from '../models/Listing';
+import { AuthRequest } from '../types';
 
 export const createBookingValidation = [
-  body('listing').isMongoId().withMessage('Valid listing ID required'),
-  body('startDate').isISO8601().withMessage('Valid start date required'),
-  body('endDate').isISO8601().withMessage('Valid end date required'),
-  body('totalPrice').isFloat({ min: 0 }).withMessage('Valid total price required')
+  body('listing').isMongoId().withMessage('Valid listing ID is required'),
+  body('startDate').isISO8601().withMessage('Valid start date is required'),
+  body('endDate').isISO8601().withMessage('Valid end date is required'),
 ];
 
-export const createBooking = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const createBooking = async (req: AuthRequest, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        error: errors.array().map(err => err.msg).join(', ')
-      });
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const { listing: listingId, startDate, endDate, totalPrice } = req.body;
-    const userId = req.user?.userId;
+    const { listing: listingId, startDate, endDate } = req.body;
 
-    // Check if listing exists
     const listing = await Listing.findById(listingId);
     if (!listing) {
-      return res.status(404).json({
-        success: false,
-        message: 'Listing not found'
-      });
+      return res.status(404).json({ message: 'Listing not found' });
     }
 
-    // Check if dates are valid
+    if (listing.host.toString() === req.user!.id) {
+      return res.status(400).json({ message: 'Cannot book your own listing' });
+    }
+
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const now = new Date();
 
-    if (start < now) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date cannot be in the past'
-      });
+    if (start >= end) {
+      return res.status(400).json({ message: 'End date must be after start date' });
     }
 
-    if (end <= start) {
-      return res.status(400).json({
-        success: false,
-        message: 'End date must be after start date'
-      });
+    if (start < new Date()) {
+      return res.status(400).json({ message: 'Cannot book dates in the past' });
     }
 
     // Check for conflicting bookings
@@ -58,132 +44,106 @@ export const createBooking = async (req: AuthRequest, res: Response<ApiResponse>
       listing: listingId,
       status: { $ne: 'cancelled' },
       $or: [
-        { startDate: { $lte: end }, endDate: { $gte: start } }
+        { startDate: { $lte: start }, endDate: { $gt: start } },
+        { startDate: { $lt: end }, endDate: { $gte: end } },
+        { startDate: { $gte: start }, endDate: { $lte: end } }
       ]
     });
 
     if (conflictingBooking) {
-      return res.status(400).json({
-        success: false,
-        message: 'Selected dates are not available'
-      });
+      return res.status(400).json({ message: 'Listing is not available for selected dates' });
     }
 
-    // Create booking
+    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    const totalPrice = nights * listing.price;
+
     const booking = new Booking({
       listing: listingId,
-      user: userId,
+      guest: req.user!.id,
       startDate: start,
       endDate: end,
       totalPrice,
-      status: 'confirmed' // In real app, this would be 'pending' until payment
+      status: 'confirmed'
     });
 
     await booking.save();
     await booking.populate([
-      { path: 'listing', select: 'title location price images' },
-      { path: 'user', select: 'name email' }
+      { path: 'listing', select: 'title images location price' },
+      { path: 'guest', select: 'name email' }
     ]);
 
     res.status(201).json({
-      success: true,
       message: 'Booking created successfully',
-      data: { booking }
+      booking
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create booking',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Create booking error:', error);
+    res.status(500).json({ message: 'Server error creating booking' });
   }
 };
 
-export const getUserBookings = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const getUserBookings = async (req: AuthRequest, res: Response) => {
   try {
-    const bookings = await Booking.find({ user: req.user?.userId })
-      .populate('listing', 'title location price images')
+    const bookings = await Booking.find({ guest: req.user!.id })
+      .populate('listing', 'title images location price')
       .sort({ createdAt: -1 });
 
-    res.json({
-      success: true,
-      message: 'User bookings retrieved successfully',
-      data: { bookings }
-    });
+    res.json(bookings);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve bookings',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Get user bookings error:', error);
+    res.status(500).json({ message: 'Server error fetching bookings' });
   }
 };
 
-export const getHostBookings = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const getHostBookings = async (req: AuthRequest, res: Response) => {
   try {
-    // Get all listings owned by the host
-    const hostListings = await Listing.find({ host: req.user?.userId }).select('_id');
-    const listingIds = hostListings.map(listing => listing._id);
-
-    // Get bookings for host's listings
-    const bookings = await Booking.find({ listing: { $in: listingIds } })
-      .populate('listing', 'title location price')
-      .populate('user', 'name email')
+    const bookings = await Booking.find()
+      .populate({
+        path: 'listing',
+        match: { host: req.user!.id },
+        select: 'title images location price'
+      })
+      .populate('guest', 'name email')
       .sort({ createdAt: -1 });
 
-    res.json({
-      success: true,
-      message: 'Host bookings retrieved successfully',
-      data: { bookings }
-    });
+    const filteredBookings = bookings.filter(booking => booking.listing);
+
+    res.json(filteredBookings);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve host bookings',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Get host bookings error:', error);
+    res.status(500).json({ message: 'Server error fetching host bookings' });
   }
 };
 
-export const cancelBooking = async (req: AuthRequest, res: Response<ApiResponse>) => {
+export const cancelBooking = async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
-    const booking = await Booking.findById(id);
+    const booking = await Booking.findById(req.params.id)
+      .populate('listing', 'host');
 
     if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: 'Booking not found'
-      });
+      return res.status(404).json({ message: 'Booking not found' });
     }
 
-    if (booking.user.toString() !== req.user?.userId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to cancel this booking'
-      });
+    const isGuest = booking.guest.toString() === req.user!.id;
+    const isHost = booking.listing && (booking.listing as any).host.toString() === req.user!.id;
+
+    if (!isGuest && !isHost) {
+      return res.status(403).json({ message: 'Not authorized to cancel this booking' });
     }
 
     if (booking.status === 'cancelled') {
-      return res.status(400).json({
-        success: false,
-        message: 'Booking is already cancelled'
-      });
+      return res.status(400).json({ message: 'Booking is already cancelled' });
     }
 
     booking.status = 'cancelled';
     await booking.save();
 
     res.json({
-      success: true,
       message: 'Booking cancelled successfully',
-      data: { booking }
+      booking
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to cancel booking',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('Cancel booking error:', error);
+    res.status(500).json({ message: 'Server error cancelling booking' });
   }
 };
