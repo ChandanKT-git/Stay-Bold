@@ -81,8 +81,43 @@ stayfinder/
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- MongoDB (local installation or MongoDB Atlas)
+- MongoDB (see MongoDB setup below)
 - Git
+
+### MongoDB Setup Options
+
+#### Option 1: Local MongoDB Installation
+1. **Install MongoDB Community Edition:**
+   - **Windows:** Download from https://www.mongodb.com/try/download/community
+   - **macOS:** `brew install mongodb-community`
+   - **Ubuntu/Debian:** 
+     ```bash
+     wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+     sudo apt-get update
+     sudo apt-get install -y mongodb-org
+     ```
+
+2. **Start MongoDB Service:**
+   - **Windows:** MongoDB should start automatically, or run `net start MongoDB`
+   - **macOS:** `brew services start mongodb-community`
+   - **Linux:** `sudo systemctl start mongod`
+
+3. **Verify MongoDB is running:**
+   ```bash
+   mongosh --eval "db.adminCommand('ismaster')"
+   ```
+
+#### Option 2: MongoDB Atlas (Cloud - Recommended for production)
+1. Go to https://www.mongodb.com/atlas
+2. Create a free account and cluster
+3. Get your connection string (replace `<password>` with your actual password)
+4. Use the Atlas connection string in your `.env` file
+
+#### Option 3: Docker (Quick setup)
+```bash
+docker run --name mongodb -d -p 27017:27017 mongo:latest
+```
 
 ### 1. Clone the Repository
 ```bash
