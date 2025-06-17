@@ -225,14 +225,28 @@ The seeded database includes test accounts:
 - `PORT` - Server port (default: 5000)
 - `MONGODB_URI` - MongoDB connection string
 - `JWT_SECRET` - Secret key for JWT tokens
-- `MAPBOX_API_KEY` - Mapbox API key for maps
-- `STRIPE_SECRET_KEY` - Stripe secret key for payments
 - `NODE_ENV` - Environment (development/production)
+
+#### Optional Environment Variables:
+- `MAPBOX_API_KEY` - Mapbox API key for interactive maps
+- `STRIPE_SECRET_KEY` - Stripe secret key for payment processing
+- `EMAIL_HOST` - SMTP host for email notifications
+- `EMAIL_PORT` - SMTP port (usually 587)
+- `EMAIL_USER` - Email username
+- `EMAIL_PASS` - Email password or app password
+- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name for image uploads
+- `CLOUDINARY_API_KEY` - Cloudinary API key
+- `CLOUDINARY_API_SECRET` - Cloudinary API secret
+- `CORS_ORIGIN` - Allowed CORS origin
+- `RATE_LIMIT_WINDOW_MS` - Rate limiting window in milliseconds
+- `RATE_LIMIT_MAX_REQUESTS` - Maximum requests per window
 
 ### Frontend (.env)
 - `VITE_API_URL` - Backend API URL
-- `VITE_MAPBOX_API_KEY` - Mapbox public API key
-- `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+
+#### Optional Environment Variables:
+- `VITE_MAPBOX_API_KEY` - Mapbox public API key for maps
+- `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key for payments
 
 ## Deployment
 
