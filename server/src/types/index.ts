@@ -8,8 +8,10 @@ export interface IUser extends Document {
   password: string;
   isHost: boolean;
   avatar?: string;
+  firebaseUid?: string;
   createdAt: Date;
   updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 export interface IListing extends Document {

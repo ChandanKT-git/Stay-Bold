@@ -27,6 +27,11 @@ const userSchema = new Schema<IUser>({
   avatar: {
     type: String,
     default: ''
+  },
+  firebaseUid: {
+    type: String,
+    sparse: true,
+    unique: true
   }
 }, {
   timestamps: true

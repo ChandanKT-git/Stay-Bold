@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Users, Bed, Bath, Star, Calendar, ArrowLeft } from 'lucide-react';
 import { Listing, Booking } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import Map from '../components/Map';
+import GoogleMapComponent from '../components/GoogleMap';
 import api from '../utils/api';
 import { differenceInDays, format } from 'date-fns';
 
@@ -216,7 +216,11 @@ const ListingDetail: React.FC = () => {
           {/* Map */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Location</h3>
-            <Map coordinates={listing.coordinates} className="h-64 w-full" />
+            <GoogleMapComponent 
+              coordinates={listing.coordinates} 
+              title={listing.title}
+              className="h-64 w-full" 
+            />
           </div>
         </div>
 

@@ -10,9 +10,6 @@
   overflow: hidden;
 }
 
-/* Mapbox styles */
-@import 'mapbox-gl/dist/mapbox-gl.css';
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

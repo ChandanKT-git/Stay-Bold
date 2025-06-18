@@ -99,3 +99,59 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error during login' });
   }
 };
+
+export const googleAuth = async (req: Request, res: Response) => {
+  try {
+    const { uid, email, name, avatar } = req.body;
+
+    if (!uid || !email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Firebase UID and email are required' 
+      });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user from Google account
+      user = new User({
+        name: name || email.split('@')[0],
+        email,
+        password: uid, // Use Firebase UID as password (won't be used for login)
+        isHost: false,
+        avatar: avatar || '',
+        firebaseUid: uid
+      });
+      await user.save();
+    } else if (!user.firebaseUid) {
+      // Link existing account with Firebase
+      user.firebaseUid = uid;
+      if (avatar) user.avatar = avatar;
+      await user.save();
+    }
+
+    const token = generateToken(user._id.toString(), user.email, user.isHost);
+
+    res.json({
+      success: true,
+      message: 'Google authentication successful',
+      data: {
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          isHost: user.isHost,
+          avatar: user.avatar
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during Google authentication' 
+    });
+  }
+};
