@@ -8,10 +8,10 @@ import Booking from '../models/Booking';
 dotenv.config();
 
 const indianListings = [
-  // Mumbai Properties
+  // Mumbai Properties (10)
   {
-    title: "Luxury Sea View Apartment in Bandra",
-    description: "Experience the vibrant energy of Mumbai from this stunning 3BHK apartment with panoramic views of the Arabian Sea. Located in the heart of Bandra West, this modern home features contemporary furnishings, a fully equipped kitchen, and access to premium amenities including a swimming pool and gym.",
+    title: "Luxury Sea View Apartment in Bandra West",
+    description: "Experience Mumbai's glamour from this stunning 3BHK apartment with panoramic Arabian Sea views. Located in Bandra's elite Hill Road area, featuring contemporary furnishings, modular kitchen, and premium amenities including infinity pool and state-of-the-art gym.",
     price: 8500,
     location: {
       address: "Hill Road, Bandra West",
@@ -24,14 +24,14 @@ const indianListings = [
       "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
     ],
-    amenities: ["WiFi", "AC", "Kitchen", "Swimming Pool", "Gym", "Security", "Parking", "Sea View"],
+    amenities: ["WiFi", "AC", "Kitchen", "Swimming Pool", "Gym", "Security", "Parking", "Sea View", "Balcony"],
     maxGuests: 6,
     bedrooms: 3,
     bathrooms: 2
   },
   {
-    title: "Cozy Studio in Colaba",
-    description: "Perfect for solo travelers or couples, this charming studio apartment is located in the historic Colaba district. Walking distance to Gateway of India, Taj Hotel, and vibrant street markets. Features modern amenities with a touch of Mumbai's colonial heritage.",
+    title: "Heritage Studio in Colaba",
+    description: "Charming studio in historic Colaba, walking distance to Gateway of India and Taj Hotel. Features colonial architecture with modern amenities, perfect for exploring South Mumbai's iconic landmarks and vibrant street life.",
     price: 3500,
     location: {
       address: "Colaba Causeway",
@@ -43,17 +43,17 @@ const indianListings = [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
     ],
-    amenities: ["WiFi", "AC", "Kitchenette", "Near Gateway of India", "Historic Location"],
+    amenities: ["WiFi", "AC", "Kitchenette", "Near Gateway of India", "Historic Location", "Cable TV"],
     maxGuests: 2,
     bedrooms: 1,
     bathrooms: 1
   },
   {
-    title: "Modern 2BHK in Powai",
-    description: "Contemporary apartment in Mumbai's IT hub with lake views and modern amenities. Perfect for business travelers and families. Close to Hiranandani Gardens and major tech companies.",
+    title: "Modern 2BHK in Powai with Lake View",
+    description: "Contemporary apartment in Mumbai's IT hub overlooking Powai Lake. Close to Hiranandani Gardens, IIT Bombay, and major tech companies. Features modern amenities and serene lake views.",
     price: 5500,
     location: {
-      address: "Hiranandani Gardens",
+      address: "Hiranandani Gardens, Powai",
       city: "Mumbai",
       country: "India",
       coordinates: [72.9081, 19.1197]
@@ -62,16 +62,149 @@ const indianListings = [
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg",
       "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
     ],
-    amenities: ["WiFi", "AC", "Kitchen", "Lake View", "Business Center", "Gym"],
+    amenities: ["WiFi", "AC", "Kitchen", "Lake View", "Business Center", "Gym", "Shopping Mall"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Luxury Penthouse in Worli",
+    description: "Exclusive penthouse with 360-degree city views including Bandra-Worli Sea Link. Features private terrace, jacuzzi, and premium furnishings in Mumbai's most prestigious neighborhood.",
+    price: 15000,
+    location: {
+      address: "Worli Sea Face",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8181, 19.0176]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Private Terrace", "Jacuzzi", "Sea Link View", "Concierge", "Valet Parking"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
+  },
+  {
+    title: "Cozy 1BHK in Andheri East",
+    description: "Perfect for business travelers, located near Mumbai Airport and major IT parks. Modern amenities with easy access to metro and shopping centers.",
+    price: 4000,
+    location: {
+      address: "Andheri East, Near Airport",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8697, 19.1136]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Kitchen", "Near Airport", "Metro Access", "Shopping Centers"],
+    maxGuests: 3,
+    bedrooms: 1,
+    bathrooms: 1
+  },
+  {
+    title: "Artist's Loft in Khar West",
+    description: "Creative space in trendy Khar West, perfect for artists and creatives. Features high ceilings, natural light, and proximity to galleries and cafes.",
+    price: 6000,
+    location: {
+      address: "Linking Road, Khar West",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8328, 19.0728]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "High Ceilings", "Natural Light", "Art Galleries", "Trendy Cafes"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1
+  },
+  {
+    title: "Family Villa in Juhu",
+    description: "Spacious villa near Juhu Beach, perfect for families. Features private garden, multiple bedrooms, and easy beach access for morning walks and sunset views.",
+    price: 12000,
+    location: {
+      address: "Juhu Tara Road",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8267, 19.1075]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Private Garden", "Beach Access", "Family Friendly", "Parking"],
+    maxGuests: 10,
+    bedrooms: 5,
+    bathrooms: 4
+  },
+  {
+    title: "Business Suite in BKC",
+    description: "Premium business suite in Bandra Kurla Complex, Mumbai's financial district. Perfect for corporate travelers with meeting rooms and business center access.",
+    price: 9000,
+    location: {
+      address: "Bandra Kurla Complex",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8697, 19.0596]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Business Center", "Meeting Rooms", "Financial District", "Metro Access"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Bollywood Theme Apartment in Goregaon",
+    description: "Unique Bollywood-themed apartment near Film City. Perfect for movie enthusiasts with memorabilia, themed decor, and studio tour packages.",
+    price: 5000,
+    location: {
+      address: "Near Film City, Goregaon",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8489, 19.1646]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Bollywood Theme", "Film City Tours", "Movie Memorabilia", "Entertainment"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Marine Drive View Apartment",
+    description: "Iconic apartment overlooking Marine Drive, the Queen's Necklace. Experience Mumbai's most famous promenade with stunning sunset views and city lights.",
+    price: 11000,
+    location: {
+      address: "Marine Drive",
+      city: "Mumbai",
+      country: "India",
+      coordinates: [72.8235, 18.9432]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Marine Drive View", "Sunset Views", "City Lights", "Iconic Location"],
     maxGuests: 4,
     bedrooms: 2,
     bathrooms: 2
   },
 
-  // Delhi Properties
+  // Delhi Properties (10)
   {
-    title: "Heritage Haveli in Old Delhi",
-    description: "Step back in time in this beautifully restored traditional haveli in the heart of Old Delhi. Experience authentic Mughal architecture with modern comforts. Walking distance to Red Fort, Jama Masjid, and Chandni Chowk market.",
+    title: "Heritage Haveli in Chandni Chowk",
+    description: "Restored 18th-century haveli in Old Delhi's heart. Experience Mughal architecture with modern comforts, walking distance to Red Fort, Jama Masjid, and spice markets.",
     price: 6500,
     location: {
       address: "Chandni Chowk",
@@ -83,14 +216,14 @@ const indianListings = [
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
       "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
     ],
-    amenities: ["WiFi", "AC", "Traditional Architecture", "Courtyard", "Near Red Fort", "Cultural Experience"],
+    amenities: ["WiFi", "AC", "Heritage Architecture", "Courtyard", "Near Red Fort", "Cultural Tours"],
     maxGuests: 8,
     bedrooms: 4,
     bathrooms: 3
   },
   {
     title: "Luxury Villa in Greater Kailash",
-    description: "Spacious independent villa in one of Delhi's most prestigious neighborhoods. Features a private garden, modern amenities, and easy access to shopping districts and restaurants.",
+    description: "Independent villa in Delhi's most prestigious neighborhood. Features landscaped garden, modern amenities, and proximity to upscale shopping and dining.",
     price: 12000,
     location: {
       address: "Greater Kailash Part 1",
@@ -102,14 +235,14 @@ const indianListings = [
       "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
     ],
-    amenities: ["WiFi", "AC", "Private Garden", "Parking", "Security", "Kitchen", "Luxury Furnishing"],
+    amenities: ["WiFi", "AC", "Private Garden", "Parking", "Security", "Luxury Furnishing", "Shopping"],
     maxGuests: 10,
     bedrooms: 5,
     bathrooms: 4
   },
   {
     title: "Modern Apartment in Connaught Place",
-    description: "Prime location apartment in the heart of New Delhi. Perfect for business travelers with easy access to metro, shopping, and dining. Modern amenities with classic Delhi charm.",
+    description: "Prime location in Delhi's commercial heart. Perfect for business travelers with metro access, shopping, and dining. Classic Delhi charm with modern amenities.",
     price: 7500,
     location: {
       address: "Connaught Place",
@@ -126,11 +259,144 @@ const indianListings = [
     bedrooms: 2,
     bathrooms: 2
   },
+  {
+    title: "Diplomatic Enclave Residence",
+    description: "Elegant residence in the diplomatic area, perfect for international visitors. Features embassy proximity, high security, and diplomatic services.",
+    price: 10000,
+    location: {
+      address: "Chanakyapuri",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.1910, 28.5984]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "High Security", "Embassy Area", "Diplomatic Services", "Luxury"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 3
+  },
+  {
+    title: "Artist Quarter in Hauz Khas Village",
+    description: "Bohemian apartment in trendy Hauz Khas Village. Surrounded by art galleries, boutiques, and cafes. Perfect for creative souls and culture enthusiasts.",
+    price: 5500,
+    location: {
+      address: "Hauz Khas Village",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.2062, 28.5494]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Art Galleries", "Boutiques", "Trendy Cafes", "Cultural Hub"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Government Quarter in Lutyens Delhi",
+    description: "Colonial bungalow in Lutyens' Delhi, featuring wide lawns, heritage architecture, and proximity to India Gate and government buildings.",
+    price: 9500,
+    location: {
+      address: "Lutyens Delhi",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.2273, 28.6139]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Heritage Architecture", "Large Lawns", "India Gate", "Government Area"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
+  },
+  {
+    title: "Tech Hub Apartment in Gurgaon",
+    description: "Modern high-rise apartment in Millennium City. Perfect for IT professionals with proximity to Cyber City, malls, and corporate offices.",
+    price: 6000,
+    location: {
+      address: "Sector 29, Gurgaon",
+      city: "Gurgaon",
+      country: "India",
+      coordinates: [77.0688, 28.4595]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "IT Hub", "Shopping Malls", "Corporate Offices", "Metro Access"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "University Area Hostel in North Campus",
+    description: "Student-friendly accommodation near Delhi University. Budget-friendly with study areas, library access, and vibrant student life.",
+    price: 2500,
+    location: {
+      address: "North Campus, Delhi University",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.2085, 28.6969]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["WiFi", "Study Areas", "Library Access", "Student Life", "Budget Friendly", "University"],
+    maxGuests: 2,
+    bedrooms: 1,
+    bathrooms: 1
+  },
+  {
+    title: "Airport Hotel in Aerocity",
+    description: "Convenient hotel near IGI Airport with shuttle service. Perfect for transit passengers and business travelers with meeting facilities.",
+    price: 4500,
+    location: {
+      address: "Aerocity",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.1025, 28.5562]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Airport Shuttle", "Meeting Facilities", "Business Center", "24/7 Service"],
+    maxGuests: 3,
+    bedrooms: 1,
+    bathrooms: 1
+  },
+  {
+    title: "Spiritual Retreat in Nizamuddin",
+    description: "Peaceful accommodation near Nizamuddin Dargah. Experience Sufi culture with qawwali nights and spiritual ambiance in historic surroundings.",
+    price: 4000,
+    location: {
+      address: "Nizamuddin West",
+      city: "New Delhi",
+      country: "India",
+      coordinates: [77.2426, 28.5933]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Spiritual Experience", "Qawwali Nights", "Sufi Culture", "Historic Area"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
 
-  // Bangalore Properties
+  // Bangalore Properties (8)
   {
     title: "Tech Hub Apartment in Koramangala",
-    description: "Modern apartment in Bangalore's Silicon Valley. Perfect for tech professionals with high-speed internet, co-working spaces nearby, and vibrant nightlife. Close to major IT companies.",
+    description: "Modern apartment in Bangalore's Silicon Valley. High-speed internet, co-working spaces, vibrant nightlife, and proximity to major IT companies.",
     price: 4500,
     location: {
       address: "Koramangala 5th Block",
@@ -149,7 +415,7 @@ const indianListings = [
   },
   {
     title: "Garden City Villa in Whitefield",
-    description: "Spacious villa surrounded by lush gardens in Bangalore's IT corridor. Features traditional South Indian architecture with modern amenities. Perfect for families and long stays.",
+    description: "Spacious villa surrounded by gardens in IT corridor. Traditional South Indian architecture with modern amenities, perfect for families.",
     price: 8000,
     location: {
       address: "Whitefield Main Road",
@@ -166,11 +432,125 @@ const indianListings = [
     bedrooms: 4,
     bathrooms: 3
   },
-
-  // Goa Properties
   {
-    title: "Beachfront Villa in North Goa",
-    description: "Wake up to the sound of waves in this stunning beachfront villa. Features direct beach access, infinity pool, and panoramic ocean views. Perfect for beach lovers and water sports enthusiasts.",
+    title: "Brewery District Loft in Indiranagar",
+    description: "Trendy loft in Bangalore's pub capital. Walking distance to microbreweries, restaurants, and shopping. Perfect for nightlife enthusiasts.",
+    price: 5500,
+    location: {
+      address: "100 Feet Road, Indiranagar",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.6413, 12.9719]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Microbreweries", "Restaurants", "Shopping", "Nightlife"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Heritage Bungalow in Basavanagudi",
+    description: "Colonial-era bungalow in traditional Bangalore neighborhood. Features heritage architecture, temple visits, and authentic South Indian culture.",
+    price: 6000,
+    location: {
+      address: "Bull Temple Road, Basavanagudi",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.5946, 12.9432]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Heritage Architecture", "Temple Visits", "Cultural Experience", "Traditional"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Startup Hub in HSR Layout",
+    description: "Modern apartment in startup ecosystem. Co-working spaces, networking events, and proximity to tech incubators and venture capital firms.",
+    price: 5000,
+    location: {
+      address: "HSR Layout Sector 1",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.6387, 12.9082]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Startup Ecosystem", "Co-working", "Networking", "Tech Incubators"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Lake View Apartment in Ulsoor",
+    description: "Serene apartment overlooking Ulsoor Lake. Perfect for morning walks, boating, and peaceful retreat from city hustle.",
+    price: 4000,
+    location: {
+      address: "Ulsoor Lake Road",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.6094, 12.9853]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Lake View", "Morning Walks", "Boating", "Peaceful"],
+    maxGuests: 3,
+    bedrooms: 2,
+    bathrooms: 1
+  },
+  {
+    title: "Airport Executive Suite in Devanahalli",
+    description: "Luxury suite near Bangalore Airport. Perfect for business travelers with airport shuttle, meeting rooms, and premium amenities.",
+    price: 7000,
+    location: {
+      address: "Devanahalli",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.7081, 13.1986]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Airport Shuttle", "Meeting Rooms", "Business Center", "Luxury"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Royal Mysore Palace Style in Jayanagar",
+    description: "Apartment designed in Mysore Palace style with traditional Karnataka architecture, cultural programs, and authentic South Indian hospitality.",
+    price: 5500,
+    location: {
+      address: "Jayanagar 4th Block",
+      city: "Bangalore",
+      country: "India",
+      coordinates: [77.5833, 12.9279]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["WiFi", "AC", "Traditional Architecture", "Cultural Programs", "South Indian", "Heritage"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+
+  // Goa Properties (6)
+  {
+    title: "Beachfront Villa in Calangute",
+    description: "Stunning villa with direct beach access to Calangute Beach. Features infinity pool, ocean views, water sports, and beach shacks nearby.",
     price: 15000,
     location: {
       address: "Calangute Beach Road",
@@ -182,38 +562,114 @@ const indianListings = [
       "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
     ],
-    amenities: ["Beach Access", "Infinity Pool", "Ocean View", "Water Sports", "WiFi", "AC"],
+    amenities: ["Beach Access", "Infinity Pool", "Ocean View", "Water Sports", "Beach Shacks", "WiFi"],
     maxGuests: 12,
     bedrooms: 6,
     bathrooms: 4
   },
   {
-    title: "Portuguese Heritage Home in Old Goa",
-    description: "Experience Goa's rich Portuguese heritage in this beautifully preserved colonial home. Features traditional architecture, antique furnishings, and peaceful courtyard gardens.",
+    title: "Portuguese Heritage Home in Fontainhas",
+    description: "Colorful Portuguese colonial house in Panaji's Latin Quarter. Features traditional architecture, art galleries, and cultural heritage walks.",
     price: 6000,
     location: {
-      address: "Old Goa Heritage Area",
+      address: "Fontainhas, Panaji",
+      city: "Goa",
+      country: "India",
+      coordinates: [73.8278, 15.4909]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["Heritage Architecture", "Art Galleries", "Cultural Walks", "Portuguese History", "WiFi", "AC"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Luxury Beach Resort in Anjuna",
+    description: "Upscale resort near famous Anjuna Beach and flea market. Features spa services, beach parties, and hippie culture experience.",
+    price: 12000,
+    location: {
+      address: "Anjuna Beach",
+      city: "Goa",
+      country: "India",
+      coordinates: [73.7407, 15.5736]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["Beach Access", "Spa Services", "Beach Parties", "Flea Market", "Hippie Culture", "WiFi"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
+  },
+  {
+    title: "Riverside Cottage in Old Goa",
+    description: "Peaceful cottage near Mandovi River and UNESCO World Heritage churches. Perfect for history enthusiasts and spiritual seekers.",
+    price: 4500,
+    location: {
+      address: "Old Goa",
       city: "Goa",
       country: "India",
       coordinates: [73.9125, 15.5057]
     },
     images: [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
     ],
-    amenities: ["Heritage Architecture", "Courtyard", "Antique Furnishing", "Cultural Experience", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
+    amenities: ["River View", "UNESCO Churches", "Historical Sites", "Spiritual Experience", "WiFi", "AC"],
+    maxGuests: 4,
+    bedrooms: 2,
     bathrooms: 2
   },
-
-  // Jaipur Properties
   {
-    title: "Royal Palace Suite in Pink City",
-    description: "Live like royalty in this magnificent palace suite in Jaipur's historic Pink City. Features traditional Rajasthani architecture, royal furnishings, and views of the City Palace.",
+    title: "Beach Shack Stay in Arambol",
+    description: "Authentic beach shack experience in hippie paradise Arambol. Features drum circles, yoga sessions, and bohemian lifestyle.",
+    price: 3000,
+    location: {
+      address: "Arambol Beach",
+      city: "Goa",
+      country: "India",
+      coordinates: [73.7024, 15.6869]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
+    ],
+    amenities: ["Beach Shack", "Drum Circles", "Yoga Sessions", "Bohemian Culture", "Hippie Paradise", "WiFi"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1
+  },
+  {
+    title: "Casino Resort in Baga",
+    description: "Luxury resort near Baga Beach with casino access, nightlife, and water sports. Perfect for entertainment and beach activities.",
+    price: 10000,
+    location: {
+      address: "Baga Beach Road",
+      city: "Goa",
+      country: "India",
+      coordinates: [73.7516, 15.5560]
+    },
+    images: [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
+    ],
+    amenities: ["Casino Access", "Nightlife", "Water Sports", "Beach Activities", "Entertainment", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 3
+  },
+
+  // Rajasthan Properties (8)
+  {
+    title: "Royal Palace Suite in Jaipur",
+    description: "Magnificent palace suite in Pink City with City Palace views. Features royal Rajasthani architecture, traditional furnishings, and cultural experiences.",
     price: 18000,
     location: {
-      address: "Near City Palace",
+      address: "Near City Palace, Jaipur",
       city: "Jaipur",
       country: "India",
       coordinates: [75.8267, 26.9260]
@@ -228,72 +684,30 @@ const indianListings = [
     bathrooms: 2
   },
   {
-    title: "Desert Camp Experience near Jaipur",
-    description: "Unique desert camping experience with luxury tents, camel rides, and traditional Rajasthani entertainment. Perfect for adventure seekers and cultural enthusiasts.",
+    title: "Desert Camp in Jaisalmer",
+    description: "Luxury desert camp with camel safaris, folk performances, and stargazing. Experience the golden city and Thar Desert adventure.",
     price: 9500,
     location: {
-      address: "Pushkar Road",
-      city: "Jaipur",
+      address: "Sam Sand Dunes, Jaisalmer",
+      city: "Jaisalmer",
       country: "India",
-      coordinates: [75.7873, 26.9124]
+      coordinates: [70.9083, 26.9157]
     },
     images: [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
     ],
-    amenities: ["Desert Experience", "Camel Rides", "Cultural Shows", "Luxury Tents", "Traditional Food"],
+    amenities: ["Desert Experience", "Camel Safari", "Folk Performances", "Stargazing", "Traditional Food", "Cultural Shows"],
     maxGuests: 6,
     bedrooms: 3,
     bathrooms: 2
   },
-
-  // Kerala Properties
   {
-    title: "Backwater Houseboat in Alleppey",
-    description: "Float through Kerala's serene backwaters in this traditional houseboat. Experience the tranquil beauty of coconut groves, paddy fields, and local village life.",
-    price: 12000,
-    location: {
-      address: "Vembanad Lake",
-      city: "Alleppey",
-      country: "India",
-      coordinates: [76.3388, 9.4981]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
-    ],
-    amenities: ["Backwater Views", "Traditional Houseboat", "Local Cuisine", "Nature Experience", "Peaceful"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 1
-  },
-  {
-    title: "Hill Station Cottage in Munnar",
-    description: "Escape to the cool hills of Munnar in this charming cottage surrounded by tea plantations. Perfect for nature lovers and those seeking tranquility.",
-    price: 5500,
-    location: {
-      address: "Tea Garden Road",
-      city: "Munnar",
-      country: "India",
-      coordinates: [77.0593, 10.0889]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
-    ],
-    amenities: ["Tea Plantation Views", "Hill Station", "Nature Walks", "Cool Climate", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Udaipur Properties
-  {
-    title: "Lake Palace View Room in Udaipur",
-    description: "Romantic accommodation with stunning views of Lake Pichola and the famous Lake Palace. Experience the Venice of the East with traditional Rajasthani hospitality.",
+    title: "Lake Palace View in Udaipur",
+    description: "Romantic accommodation with Lake Pichola and Lake Palace views. Experience the Venice of the East with boat rides and sunset views.",
     price: 14000,
     location: {
-      address: "Lake Pichola Road",
+      address: "Lake Pichola Road, Udaipur",
       city: "Udaipur",
       country: "India",
       coordinates: [73.6833, 24.5854]
@@ -302,142 +716,33 @@ const indianListings = [
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
       "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
     ],
-    amenities: ["Lake Views", "Palace Views", "Romantic Setting", "Traditional Architecture", "WiFi", "AC"],
+    amenities: ["Lake Views", "Palace Views", "Boat Rides", "Sunset Views", "Romantic Setting", "WiFi"],
     maxGuests: 2,
     bedrooms: 1,
     bathrooms: 1
   },
-
-  // Rishikesh Properties
   {
-    title: "Yoga Retreat Ashram in Rishikesh",
-    description: "Find inner peace at this authentic yoga ashram on the banks of the holy Ganges. Includes daily yoga sessions, meditation, and vegetarian meals.",
-    price: 3500,
-    location: {
-      address: "Laxman Jhula Road",
-      city: "Rishikesh",
-      country: "India",
-      coordinates: [78.2676, 30.0869]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
-    ],
-    amenities: ["Yoga Classes", "Meditation", "Ganges Views", "Vegetarian Meals", "Spiritual Experience"],
-    maxGuests: 2,
-    bedrooms: 1,
-    bathrooms: 1
-  },
-
-  // Agra Properties
-  {
-    title: "Taj Mahal View Hotel in Agra",
-    description: "Wake up to views of the iconic Taj Mahal from this heritage hotel. Experience the grandeur of Mughal architecture while enjoying modern comforts.",
-    price: 11000,
-    location: {
-      address: "Taj Ganj",
-      city: "Agra",
-      country: "India",
-      coordinates: [78.0421, 27.1750]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
-    ],
-    amenities: ["Taj Mahal Views", "Heritage Hotel", "Mughal Architecture", "Cultural Experience", "WiFi", "AC"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 2
-  },
-
-  // Varanasi Properties
-  {
-    title: "Ganges Ghat Heritage Stay in Varanasi",
-    description: "Experience the spiritual heart of India with this traditional accommodation overlooking the sacred Ganges ghats. Witness daily aarti ceremonies and ancient rituals.",
-    price: 4500,
-    location: {
-      address: "Dashashwamedh Ghat",
-      city: "Varanasi",
-      country: "India",
-      coordinates: [83.0047, 25.3176]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
-    ],
-    amenities: ["Ganges Views", "Ghat Access", "Spiritual Experience", "Traditional Architecture", "Cultural Immersion"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 1
-  },
-
-  // Hampi Properties
-  {
-    title: "Heritage Stay in Hampi Ruins",
-    description: "Stay amidst the UNESCO World Heritage ruins of Hampi. Experience the grandeur of the Vijayanagara Empire with comfortable modern amenities.",
-    price: 6500,
-    location: {
-      address: "Hampi Bazaar",
-      city: "Hampi",
-      country: "India",
-      coordinates: [76.4740, 15.3350]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
-    ],
-    amenities: ["UNESCO Heritage Site", "Ancient Ruins", "Historical Experience", "Rock Formations", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Shimla Properties
-  {
-    title: "Colonial Cottage in Shimla Hills",
-    description: "Charming British-era cottage in the Queen of Hills. Enjoy cool mountain air, colonial architecture, and panoramic Himalayan views.",
-    price: 7500,
-    location: {
-      address: "The Mall Road",
-      city: "Shimla",
-      country: "India",
-      coordinates: [77.1734, 31.1048]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
-    ],
-    amenities: ["Mountain Views", "Colonial Architecture", "Cool Climate", "Himalayan Views", "WiFi", "Fireplace"],
-    maxGuests: 5,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Darjeeling Properties
-  {
-    title: "Tea Estate Bungalow in Darjeeling",
-    description: "Stay in a working tea estate with stunning views of Kanchenjunga. Experience tea plucking, processing, and enjoy the world's finest Darjeeling tea.",
+    title: "Blue City Haveli in Jodhpur",
+    description: "Traditional haveli in Jodhpur's Blue City with Mehrangarh Fort views. Experience authentic Rajasthani culture and architecture.",
     price: 8500,
     location: {
-      address: "Happy Valley Tea Estate",
-      city: "Darjeeling",
+      address: "Old City, Jodhpur",
+      city: "Jodhpur",
       country: "India",
-      coordinates: [88.2636, 27.0410]
+      coordinates: [73.0243, 26.2389]
     },
     images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
     ],
-    amenities: ["Tea Estate", "Mountain Views", "Tea Tasting", "Kanchenjunga Views", "Cool Climate", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
+    amenities: ["Fort Views", "Traditional Haveli", "Blue City", "Cultural Immersion", "Rooftop Terrace", "WiFi"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
   },
-
-  // Pushkar Properties
   {
     title: "Desert Oasis in Pushkar",
-    description: "Peaceful retreat in the holy city of Pushkar. Features traditional Rajasthani architecture, camel safaris, and proximity to the sacred Pushkar Lake.",
+    description: "Peaceful retreat in holy city Pushkar with sacred lake views. Features camel safaris, spiritual experiences, and desert adventures.",
     price: 5500,
     location: {
       address: "Pushkar Lake Road",
@@ -449,79 +754,149 @@ const indianListings = [
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
       "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
     ],
-    amenities: ["Sacred Lake Views", "Camel Safari", "Traditional Architecture", "Spiritual Experience", "Desert Location"],
+    amenities: ["Sacred Lake", "Camel Safari", "Spiritual Experience", "Desert Adventure", "Holy City", "WiFi"],
     maxGuests: 4,
     bedrooms: 2,
     bathrooms: 2
   },
-
-  // Coorg Properties
   {
-    title: "Coffee Plantation Stay in Coorg",
-    description: "Immerse yourself in the aromatic world of coffee in this plantation homestay. Experience coffee processing, spice gardens, and misty hill views.",
-    price: 6000,
+    title: "Hill Station Resort in Mount Abu",
+    description: "Rajasthan's only hill station with Nakki Lake views and Dilwara Jain temples. Cool climate retreat from desert heat.",
+    price: 7500,
     location: {
-      address: "Madikeri Coffee Estate",
-      city: "Coorg",
+      address: "Nakki Lake Road, Mount Abu",
+      city: "Mount Abu",
       country: "India",
-      coordinates: [75.7382, 12.4244]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
-    ],
-    amenities: ["Coffee Plantation", "Spice Gardens", "Hill Views", "Nature Walks", "Fresh Coffee", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Manali Properties
-  {
-    title: "Himalayan Retreat in Manali",
-    description: "Adventure base camp in the heart of Himachal Pradesh. Perfect for trekking, river rafting, and experiencing the majestic Himalayas.",
-    price: 7000,
-    location: {
-      address: "Old Manali Road",
-      city: "Manali",
-      country: "India",
-      coordinates: [77.1892, 32.2396]
+      coordinates: [72.7081, 24.5925]
     },
     images: [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
     ],
-    amenities: ["Himalayan Views", "Adventure Sports", "Trekking Base", "River Rafting", "Mountain Air", "WiFi"],
-    maxGuests: 8,
-    bedrooms: 4,
-    bathrooms: 3
+    amenities: ["Hill Station", "Lake Views", "Jain Temples", "Cool Climate", "Desert Retreat", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
   },
-
-  // Mysore Properties
   {
-    title: "Royal Heritage Hotel in Mysore",
-    description: "Experience the grandeur of the Mysore Palace era in this heritage hotel. Features royal architecture, traditional decor, and proximity to the famous Mysore Palace.",
-    price: 9500,
+    title: "Heritage Hotel in Bikaner",
+    description: "Restored palace hotel in Bikaner with camel breeding farm visits and desert culture. Experience royal hospitality and desert life.",
+    price: 9000,
     location: {
-      address: "Near Mysore Palace",
-      city: "Mysore",
+      address: "Bikaner Fort Area",
+      city: "Bikaner",
       country: "India",
-      coordinates: [76.6394, 12.2958]
+      coordinates: [73.3119, 28.0229]
     },
     images: [
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
       "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
     ],
-    amenities: ["Royal Architecture", "Palace Views", "Heritage Experience", "Traditional Decor", "Cultural Tours", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
+    amenities: ["Palace Hotel", "Camel Farm", "Desert Culture", "Royal Hospitality", "Fort Views", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 3
+  },
+  {
+    title: "Ranthambore Safari Lodge",
+    description: "Luxury eco-lodge near Ranthambore National Park. Perfect for tiger safaris, wildlife photography, and nature experiences.",
+    price: 12000,
+    location: {
+      address: "Ranthambore Road, Sawai Madhopur",
+      city: "Sawai Madhopur",
+      country: "India",
+      coordinates: [76.3794, 26.0173]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["Tiger Safari", "Wildlife Photography", "Eco-Lodge", "Nature Experience", "National Park", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
     bathrooms: 2
   },
 
-  // Kochi Properties
+  // Kerala Properties (6)
   {
-    title: "Spice Route Heritage Home in Kochi",
-    description: "Historic home in the spice trading capital of India. Experience the confluence of cultures with Dutch, Portuguese, and local Kerala influences.",
+    title: "Backwater Houseboat in Alleppey",
+    description: "Traditional Kerala houseboat floating through serene backwaters. Experience coconut groves, paddy fields, and village life with authentic cuisine.",
+    price: 12000,
+    location: {
+      address: "Vembanad Lake, Alleppey",
+      city: "Alleppey",
+      country: "India",
+      coordinates: [76.3388, 9.4981]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["Backwater Views", "Traditional Houseboat", "Local Cuisine", "Village Life", "Coconut Groves", "Peaceful"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1
+  },
+  {
+    title: "Hill Station Cottage in Munnar",
+    description: "Charming cottage surrounded by tea plantations in Munnar hills. Perfect for nature lovers seeking tranquility and cool mountain air.",
+    price: 5500,
+    location: {
+      address: "Tea Garden Road, Munnar",
+      city: "Munnar",
+      country: "India",
+      coordinates: [77.0593, 10.0889]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["Tea Plantations", "Hill Station", "Nature Walks", "Cool Climate", "Mountain Air", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Spice Plantation Stay in Thekkady",
+    description: "Eco-friendly stay in spice plantations near Periyar Wildlife Sanctuary. Experience spice tours, elephant rides, and wildlife spotting.",
+    price: 6500,
+    location: {
+      address: "Thekkady, Periyar",
+      city: "Thekkady",
+      country: "India",
+      coordinates: [77.1642, 9.5916]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
+    ],
+    amenities: ["Spice Plantations", "Wildlife Sanctuary", "Elephant Rides", "Spice Tours", "Eco-Friendly", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Beach Resort in Kovalam",
+    description: "Luxury beach resort with Ayurvedic spa and lighthouse views. Perfect for beach relaxation and traditional Kerala treatments.",
+    price: 9000,
+    location: {
+      address: "Lighthouse Beach, Kovalam",
+      city: "Kovalam",
+      country: "India",
+      coordinates: [76.9786, 8.4004]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["Beach Access", "Ayurvedic Spa", "Lighthouse Views", "Traditional Treatments", "Beach Resort", "WiFi"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
+  },
+  {
+    title: "Heritage Home in Fort Kochi",
+    description: "Colonial heritage home in historic Fort Kochi with Chinese fishing nets and spice market access. Experience cultural fusion.",
     price: 7500,
     location: {
       address: "Fort Kochi",
@@ -533,40 +908,95 @@ const indianListings = [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
     ],
-    amenities: ["Heritage Architecture", "Spice Gardens", "Cultural Fusion", "Fort Kochi", "Chinese Fishing Nets", "WiFi"],
+    amenities: ["Heritage Home", "Chinese Fishing Nets", "Spice Markets", "Cultural Fusion", "Colonial History", "WiFi"],
     maxGuests: 6,
     bedrooms: 3,
     bathrooms: 2
   },
-
-  // Jodhpur Properties
   {
-    title: "Blue City Haveli in Jodhpur",
-    description: "Traditional haveli in the heart of the Blue City. Experience authentic Rajasthani culture with stunning views of Mehrangarh Fort.",
+    title: "Ayurvedic Wellness Resort in Varkala",
+    description: "Clifftop resort in Varkala with Ayurvedic treatments and beach access. Perfect for wellness retreats and spiritual healing.",
     price: 8500,
     location: {
-      address: "Old City, Near Clock Tower",
-      city: "Jodhpur",
+      address: "Varkala Cliff",
+      city: "Varkala",
       country: "India",
-      coordinates: [73.0243, 26.2389]
+      coordinates: [76.7066, 8.7379]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
+    ],
+    amenities: ["Clifftop Location", "Ayurvedic Treatments", "Beach Access", "Wellness Retreat", "Spiritual Healing", "WiFi"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+
+  // Additional Indian Cities (12)
+  {
+    title: "Yoga Ashram in Rishikesh",
+    description: "Authentic ashram on Ganges banks with daily yoga, meditation, and spiritual teachings. Experience the yoga capital of the world.",
+    price: 3500,
+    location: {
+      address: "Laxman Jhula, Rishikesh",
+      city: "Rishikesh",
+      country: "India",
+      coordinates: [78.2676, 30.0869]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["Yoga Classes", "Meditation", "Ganges Views", "Spiritual Teachings", "Vegetarian Meals", "Ashram Life"],
+    maxGuests: 2,
+    bedrooms: 1,
+    bathrooms: 1
+  },
+  {
+    title: "Taj Mahal View Hotel in Agra",
+    description: "Heritage hotel with iconic Taj Mahal views. Experience Mughal grandeur with marble architecture and cultural tours.",
+    price: 11000,
+    location: {
+      address: "Taj Ganj, Agra",
+      city: "Agra",
+      country: "India",
+      coordinates: [78.0421, 27.1750]
     },
     images: [
       "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
     ],
-    amenities: ["Fort Views", "Traditional Haveli", "Blue City Experience", "Cultural Immersion", "Rooftop Terrace", "WiFi"],
-    maxGuests: 8,
-    bedrooms: 4,
-    bathrooms: 3
+    amenities: ["Taj Mahal Views", "Heritage Hotel", "Mughal Architecture", "Cultural Tours", "Marble Decor", "WiFi"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
   },
-
-  // Amritsar Properties
   {
-    title: "Golden Temple Heritage Stay in Amritsar",
-    description: "Experience the spiritual heart of Sikhism with accommodation near the Golden Temple. Includes langar meals and cultural experiences.",
+    title: "Spiritual Ghat Stay in Varanasi",
+    description: "Traditional accommodation overlooking sacred Ganges ghats. Witness daily aarti ceremonies and ancient spiritual rituals.",
     price: 4500,
     location: {
-      address: "Near Golden Temple",
+      address: "Dashashwamedh Ghat, Varanasi",
+      city: "Varanasi",
+      country: "India",
+      coordinates: [83.0047, 25.3176]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["Ganges Views", "Ghat Access", "Aarti Ceremonies", "Spiritual Rituals", "Cultural Immersion", "Traditional"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1
+  },
+  {
+    title: "Golden Temple Heritage Stay in Amritsar",
+    description: "Accommodation near Golden Temple with langar meals and Sikh cultural experiences. Experience spiritual heart of Sikhism.",
+    price: 4500,
+    location: {
+      address: "Near Golden Temple, Amritsar",
       city: "Amritsar",
       country: "India",
       coordinates: [74.8723, 31.6340]
@@ -575,37 +1005,147 @@ const indianListings = [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
     ],
-    amenities: ["Golden Temple Views", "Spiritual Experience", "Langar Meals", "Cultural Heritage", "Sikh Culture", "WiFi"],
+    amenities: ["Golden Temple Views", "Langar Meals", "Sikh Culture", "Spiritual Experience", "Cultural Heritage", "WiFi"],
     maxGuests: 4,
     bedrooms: 2,
     bathrooms: 1
   },
-
-  // Ooty Properties
   {
-    title: "Colonial Hill Station Bungalow in Ooty",
-    description: "Charming British-era bungalow in the Queen of Hill Stations. Surrounded by tea gardens, eucalyptus forests, and cool mountain air.",
-    price: 6500,
+    title: "Colonial Hill Station in Shimla",
+    description: "British-era cottage in Queen of Hills with Himalayan views. Experience colonial charm with mountain railways and cool climate.",
+    price: 7500,
     location: {
-      address: "Botanical Garden Road",
-      city: "Ooty",
+      address: "The Mall Road, Shimla",
+      city: "Shimla",
       country: "India",
-      coordinates: [76.6950, 11.4064]
+      coordinates: [77.1734, 31.1048]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["Himalayan Views", "Colonial Architecture", "Mountain Railway", "Cool Climate", "Mall Road", "WiFi"],
+    maxGuests: 5,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Tea Estate Bungalow in Darjeeling",
+    description: "Working tea estate with Kanchenjunga views. Experience tea plucking, processing, and world's finest Darjeeling tea tasting.",
+    price: 8500,
+    location: {
+      address: "Happy Valley Tea Estate, Darjeeling",
+      city: "Darjeeling",
+      country: "India",
+      coordinates: [88.2636, 27.0410]
     },
     images: [
       "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
       "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
     ],
-    amenities: ["Hill Station", "Tea Gardens", "Colonial Architecture", "Cool Climate", "Botanical Gardens", "WiFi"],
+    amenities: ["Tea Estate", "Kanchenjunga Views", "Tea Tasting", "Tea Processing", "Mountain Views", "WiFi"],
     maxGuests: 6,
     bedrooms: 3,
     bathrooms: 2
   },
-
-  // Leh-Ladakh Properties
   {
-    title: "Himalayan Monastery Stay in Leh",
-    description: "Unique opportunity to stay in a traditional Ladakhi monastery. Experience Buddhist culture, meditation, and breathtaking Himalayan landscapes.",
+    title: "Coffee Plantation Stay in Coorg",
+    description: "Aromatic coffee plantation homestay with spice gardens and misty hills. Experience coffee processing and Karnataka culture.",
+    price: 6000,
+    location: {
+      address: "Madikeri Coffee Estate, Coorg",
+      city: "Coorg",
+      country: "India",
+      coordinates: [75.7382, 12.4244]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
+    ],
+    amenities: ["Coffee Plantation", "Spice Gardens", "Coffee Processing", "Hill Views", "Karnataka Culture", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Adventure Base in Manali",
+    description: "Mountain retreat perfect for Himalayan adventures. Trekking, river rafting, paragliding, and snow activities base camp.",
+    price: 7000,
+    location: {
+      address: "Old Manali Road",
+      city: "Manali",
+      country: "India",
+      coordinates: [77.1892, 32.2396]
+    },
+    images: [
+      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
+      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
+    ],
+    amenities: ["Himalayan Views", "Adventure Sports", "Trekking Base", "River Rafting", "Paragliding", "WiFi"],
+    maxGuests: 8,
+    bedrooms: 4,
+    bathrooms: 3
+  },
+  {
+    title: "Royal Heritage in Mysore",
+    description: "Palace-era hotel near Mysore Palace with royal architecture and traditional Karnataka hospitality. Experience royal grandeur.",
+    price: 9500,
+    location: {
+      address: "Near Mysore Palace",
+      city: "Mysore",
+      country: "India",
+      coordinates: [76.6394, 12.2958]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["Palace Views", "Royal Architecture", "Karnataka Culture", "Heritage Experience", "Traditional Decor", "WiFi"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "French Colonial Villa in Pondicherry",
+    description: "Restored French colonial villa in White Town with Auroville proximity. Experience French India with peaceful courtyards.",
+    price: 8000,
+    location: {
+      address: "French Quarter, Pondicherry",
+      city: "Pondicherry",
+      country: "India",
+      coordinates: [79.8083, 11.9416]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
+    ],
+    amenities: ["French Architecture", "Colonial Heritage", "Auroville Access", "Peaceful Courtyard", "Cultural Fusion", "WiFi"],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2
+  },
+  {
+    title: "Temple Architecture Stay in Khajuraho",
+    description: "Heritage accommodation near UNESCO World Heritage Khajuraho temples. Experience medieval Indian art and temple architecture.",
+    price: 7000,
+    location: {
+      address: "Temple Road, Khajuraho",
+      city: "Khajuraho",
+      country: "India",
+      coordinates: [79.9199, 24.8318]
+    },
+    images: [
+      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
+      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
+    ],
+    amenities: ["UNESCO Heritage", "Temple Views", "Medieval Art", "Cultural Heritage", "Architecture Tours", "WiFi"],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 2
+  },
+  {
+    title: "Himalayan Monastery in Leh Ladakh",
+    description: "Traditional Ladakhi monastery stay with Buddhist culture immersion. Experience meditation, high altitude, and Himalayan landscapes.",
     price: 5500,
     location: {
       address: "Leh Monastery Road",
@@ -621,237 +1161,6 @@ const indianListings = [
     maxGuests: 4,
     bedrooms: 2,
     bathrooms: 1
-  },
-
-  // Ranthambore Properties
-  {
-    title: "Wildlife Safari Lodge near Ranthambore",
-    description: "Luxury eco-lodge on the edge of Ranthambore National Park. Perfect base for tiger safaris and wildlife photography.",
-    price: 12000,
-    location: {
-      address: "Ranthambore Road",
-      city: "Sawai Madhopur",
-      country: "India",
-      coordinates: [76.3794, 26.0173]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
-    ],
-    amenities: ["Wildlife Safari", "Tiger Reserve", "Eco-Lodge", "Nature Photography", "Jungle Views", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Pondicherry Properties
-  {
-    title: "French Colonial Villa in Pondicherry",
-    description: "Experience French India in this beautifully restored colonial villa. Features French architecture, peaceful courtyards, and proximity to Auroville.",
-    price: 8000,
-    location: {
-      address: "French Quarter",
-      city: "Pondicherry",
-      country: "India",
-      coordinates: [79.8083, 11.9416]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
-    ],
-    amenities: ["French Architecture", "Colonial Heritage", "Peaceful Courtyard", "Near Auroville", "Cultural Fusion", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Khajuraho Properties
-  {
-    title: "Heritage Stay near Khajuraho Temples",
-    description: "Accommodation near the famous UNESCO World Heritage Khajuraho temples. Experience medieval Indian art and architecture.",
-    price: 7000,
-    location: {
-      address: "Temple Road",
-      city: "Khajuraho",
-      country: "India",
-      coordinates: [79.9199, 24.8318]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
-    ],
-    amenities: ["UNESCO Heritage Site", "Temple Views", "Medieval Architecture", "Cultural Heritage", "Art History", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 2
-  },
-
-  // Mahabalipuram Properties
-  {
-    title: "Beach Resort near Shore Temple",
-    description: "Beachfront accommodation near the ancient Shore Temple. Combine beach relaxation with UNESCO World Heritage site exploration.",
-    price: 9000,
-    location: {
-      address: "Shore Temple Road",
-      city: "Mahabalipuram",
-      country: "India",
-      coordinates: [80.1932, 12.6269]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg",
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg"
-    ],
-    amenities: ["Beach Access", "Shore Temple Views", "UNESCO Heritage", "Ancient Architecture", "Beach Activities", "WiFi"],
-    maxGuests: 8,
-    bedrooms: 4,
-    bathrooms: 3
-  },
-
-  // Gangtok Properties
-  {
-    title: "Himalayan View Lodge in Gangtok",
-    description: "Spectacular views of Kanchenjunga from this mountain lodge in Sikkim's capital. Perfect base for exploring Buddhist monasteries and mountain treks.",
-    price: 6500,
-    location: {
-      address: "MG Marg",
-      city: "Gangtok",
-      country: "India",
-      coordinates: [88.6138, 27.3389]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
-    ],
-    amenities: ["Kanchenjunga Views", "Buddhist Monasteries", "Mountain Treks", "Himalayan Culture", "Cool Climate", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 2
-  },
-
-  // Aurangabad Properties
-  {
-    title: "Heritage Hotel near Ajanta Ellora",
-    description: "Luxury accommodation near the world-famous Ajanta and Ellora caves. Experience ancient Buddhist and Hindu rock-cut architecture.",
-    price: 8500,
-    location: {
-      address: "Ajanta Ellora Road",
-      city: "Aurangabad",
-      country: "India",
-      coordinates: [75.3433, 19.8762]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg"
-    ],
-    amenities: ["UNESCO Heritage Sites", "Ancient Caves", "Rock-cut Architecture", "Buddhist Heritage", "Cultural Tours", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Kodaikanal Properties
-  {
-    title: "Lake View Cottage in Kodaikanal",
-    description: "Peaceful cottage overlooking Kodai Lake in the Princess of Hill Stations. Perfect for romantic getaways and nature lovers.",
-    price: 5500,
-    location: {
-      address: "Lake Road",
-      city: "Kodaikanal",
-      country: "India",
-      coordinates: [77.4890, 10.2381]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
-    ],
-    amenities: ["Lake Views", "Hill Station", "Cool Climate", "Nature Walks", "Romantic Setting", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 2
-  },
-
-  // Mount Abu Properties
-  {
-    title: "Hill Station Resort in Mount Abu",
-    description: "Rajasthan's only hill station offering cool respite from desert heat. Features Dilwara Jain temples and scenic Nakki Lake.",
-    price: 7500,
-    location: {
-      address: "Nakki Lake Road",
-      city: "Mount Abu",
-      country: "India",
-      coordinates: [72.7081, 24.5925]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg"
-    ],
-    amenities: ["Hill Station", "Nakki Lake", "Dilwara Temples", "Cool Climate", "Jain Architecture", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
-  },
-
-  // Madurai Properties
-  {
-    title: "Temple City Heritage Stay in Madurai",
-    description: "Traditional accommodation in the temple city of Madurai. Experience the magnificent Meenakshi Temple and vibrant Tamil culture.",
-    price: 5000,
-    location: {
-      address: "Near Meenakshi Temple",
-      city: "Madurai",
-      country: "India",
-      coordinates: [78.1198, 9.9252]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg"
-    ],
-    amenities: ["Meenakshi Temple", "Tamil Culture", "Traditional Architecture", "Temple City", "Cultural Heritage", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 1
-  },
-
-  // Bhubaneswar Properties
-  {
-    title: "Temple Architecture Stay in Bhubaneswar",
-    description: "Explore the temple city of Bhubaneswar with its 1000+ temples. Experience Kalinga architecture and Odissi dance culture.",
-    price: 4500,
-    location: {
-      address: "Old Town",
-      city: "Bhubaneswar",
-      country: "India",
-      coordinates: [85.8245, 20.2961]
-    },
-    images: [
-      "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg",
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg"
-    ],
-    amenities: ["Ancient Temples", "Kalinga Architecture", "Odissi Dance", "Cultural Heritage", "Temple City", "WiFi"],
-    maxGuests: 4,
-    bedrooms: 2,
-    bathrooms: 2
-  },
-
-  // Guwahati Properties
-  {
-    title: "Brahmaputra River Lodge in Guwahati",
-    description: "Gateway to Northeast India with views of the mighty Brahmaputra River. Experience Assamese culture and cuisine.",
-    price: 5500,
-    location: {
-      address: "Brahmaputra Riverfront",
-      city: "Guwahati",
-      country: "India",
-      coordinates: [91.7362, 26.1445]
-    },
-    images: [
-      "https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg"
-    ],
-    amenities: ["River Views", "Assamese Culture", "Northeast Gateway", "Traditional Cuisine", "Cultural Experience", "WiFi"],
-    maxGuests: 6,
-    bedrooms: 3,
-    bathrooms: 2
   }
 ];
 
@@ -881,6 +1190,13 @@ const seedDatabase = async () => {
       isHost: true
     });
     
+    const hostUser3 = new User({
+      name: 'Arjun Singh',
+      email: 'arjun@stayfinder.in',
+      password: 'Host123!',
+      isHost: true
+    });
+    
     const guestUser = new User({
       name: 'Amit Patel',
       email: 'amit@stayfinder.in',
@@ -897,17 +1213,19 @@ const seedDatabase = async () => {
     
     await hostUser.save();
     await hostUser2.save();
+    await hostUser3.save();
     await guestUser.save();
     await guestUser2.save();
     
     console.log('Created test users');
     
-    // Create sample listings with alternating hosts
+    // Create sample listings with rotating hosts
+    const hosts = [hostUser._id, hostUser2._id, hostUser3._id];
     const listings = await Promise.all(
       indianListings.map((listingData, index) => {
         const listing = new Listing({
           ...listingData,
-          host: index % 2 === 0 ? hostUser._id : hostUser2._id
+          host: hosts[index % hosts.length]
         });
         return listing.save();
       })
@@ -926,20 +1244,28 @@ const seedDatabase = async () => {
         status: 'confirmed'
       },
       {
-        listing: listings[5]._id,
+        listing: listings[15]._id,
         guest: guestUser2._id,
         startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         endDate: new Date(Date.now() + 18 * 24 * 60 * 60 * 1000),
-        totalPrice: listings[5].price * 4,
+        totalPrice: listings[15].price * 4,
         status: 'confirmed'
       },
       {
-        listing: listings[10]._id,
+        listing: listings[30]._id,
         guest: guestUser._id,
         startDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
         endDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
-        totalPrice: listings[10].price * 4,
+        totalPrice: listings[30].price * 4,
         status: 'pending'
+      },
+      {
+        listing: listings[45]._id,
+        guest: guestUser2._id,
+        startDate: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
+        endDate: new Date(Date.now() + 32 * 24 * 60 * 60 * 1000),
+        totalPrice: listings[45].price * 4,
+        status: 'confirmed'
       }
     ];
     
@@ -952,25 +1278,40 @@ const seedDatabase = async () => {
     
     console.log('Created sample bookings');
     
-    console.log('\n🎉 Indian StayFinder Database seeded successfully!');
-    console.log('═'.repeat(60));
+    console.log('\n🎉 STAYFINDER INDIA DATABASE SEEDED SUCCESSFULLY!');
+    console.log('═'.repeat(70));
     console.log('📊 STATISTICS:');
-    console.log(`   🏠 Total Listings: ${listings.length}`);
-    console.log(`   👥 Total Users: 4 (2 hosts, 2 guests)`);
+    console.log(`   🏠 Total Properties: ${listings.length}`);
+    console.log(`   👥 Total Users: 5 (3 hosts, 2 guests)`);
     console.log(`   📅 Total Bookings: ${sampleBookings.length}`);
     console.log('\n🔐 TEST ACCOUNTS:');
     console.log('   🏠 Host 1: rajesh@stayfinder.in / Host123!');
     console.log('   🏠 Host 2: priya@stayfinder.in / Host123!');
+    console.log('   🏠 Host 3: arjun@stayfinder.in / Host123!');
     console.log('   👤 Guest 1: amit@stayfinder.in / Guest123!');
     console.log('   👤 Guest 2: sneha@stayfinder.in / Guest123!');
-    console.log('\n🇮🇳 FEATURED DESTINATIONS:');
-    console.log('   🏙️  Mumbai, Delhi, Bangalore');
-    console.log('   🏖️  Goa, Kerala Backwaters');
-    console.log('   🏰 Rajasthan (Jaipur, Udaipur, Jodhpur)');
-    console.log('   🏔️  Himalayas (Manali, Shimla, Leh)');
-    console.log('   🕉️  Spiritual (Varanasi, Rishikesh, Amritsar)');
-    console.log('   🏛️  Heritage (Agra, Khajuraho, Hampi)');
-    console.log('═'.repeat(60));
+    console.log('\n🇮🇳 FEATURED DESTINATIONS (60 PROPERTIES):');
+    console.log('   🏙️  Mumbai (10) - Sea views, heritage, tech hubs');
+    console.log('   🏛️  Delhi (10) - Heritage, luxury, diplomatic areas');
+    console.log('   💻 Bangalore (8) - Tech hubs, gardens, heritage');
+    console.log('   🏖️  Goa (6) - Beaches, Portuguese heritage, nightlife');
+    console.log('   🏰 Rajasthan (8) - Palaces, deserts, forts, lakes');
+    console.log('   🌴 Kerala (6) - Backwaters, hills, spices, beaches');
+    console.log('   🕉️  Spiritual (4) - Rishikesh, Varanasi, Amritsar');
+    console.log('   🏔️  Mountains (4) - Shimla, Darjeeling, Manali, Leh');
+    console.log('   🏛️  Heritage (4) - Agra, Khajuraho, Mysore, Pondicherry');
+    console.log('\n💰 PRICE RANGE:');
+    console.log('   💵 Budget: ₹2,500 - ₹5,000 (Student hostels, ashrams)');
+    console.log('   💴 Mid-range: ₹5,000 - ₹10,000 (Heritage, hill stations)');
+    console.log('   💸 Luxury: ₹10,000+ (Palaces, beach resorts, villas)');
+    console.log('\n🎯 PROPERTY TYPES:');
+    console.log('   🏰 Heritage Properties: Palaces, havelis, colonial homes');
+    console.log('   🏖️  Beach Resorts: Goa, Kerala coastal properties');
+    console.log('   🏔️  Mountain Retreats: Hill stations, tea estates');
+    console.log('   🕉️  Spiritual Stays: Ashrams, monastery experiences');
+    console.log('   💼 Business Hotels: IT hubs, airport proximity');
+    console.log('   🎨 Cultural Experiences: Art districts, heritage areas');
+    console.log('═'.repeat(70));
     
     process.exit(0);
   } catch (error) {
