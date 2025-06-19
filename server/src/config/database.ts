@@ -46,8 +46,7 @@ export const connectDB = async (): Promise<void> => {
       heartbeatFrequencyMS: 10000,
       
       // Additional options for Atlas
-      maxIdleTimeMS: 30000,
-      serverSelectionRetryDelayMS: 2000
+      maxIdleTimeMS: 30000
     };
 
     // Connect to MongoDB with proper error handling
