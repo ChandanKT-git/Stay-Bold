@@ -18,13 +18,18 @@ const BookingsPage: React.FC = () => {
       setLoading(true);
       const response = await api.get('/api/bookings/user');
       
-      if (response.data.success) {
-        setBookings(response.data.data.bookings);
+      if (response.data.success && response.data.data) {
+        setBookings(response.data.data.bookings || []);
       } else {
-        setError(response.data.message);
+        setError(response.data.message || 'Failed to fetch bookings');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch bookings');
+      console.error('Bookings fetch error:', err);
+      if (err.response?.status === 503) {
+        setError('Service temporarily unavailable. Please try again later.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to fetch bookings');
+      }
     } finally {
       setLoading(false);
     }

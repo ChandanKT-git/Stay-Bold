@@ -25,9 +25,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Only redirect to login for 401 errors on protected routes
+    if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+    } else if (error.response?.status === 503) {
+      console.warn('Service temporarily unavailable:', error.response?.data?.message);
     }
     return Promise.reject(error);
   }

@@ -37,7 +37,11 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
   if (!apiKey) {
     return (
       <div className={`${className} bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center`}>
-        <p className="text-gray-500 dark:text-gray-400">Google Maps API key not configured</p>
+        <div className="text-center p-4">
+          <div className="text-4xl mb-2">🗺️</div>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Map view unavailable</p>
+          <p className="text-gray-400 dark:text-gray-500 text-xs">Configure Google Maps API key</p>
+        </div>
       </div>
     );
   }

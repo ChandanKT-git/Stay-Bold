@@ -300,19 +300,34 @@ export const cspMiddleware = (req: Request, res: Response, next: NextFunction) =
 export const cspReportHandler = (req: Request, res: Response) => {
   const violation = req.body;
   
-  // Log the violation with useful details
-  console.log('🚨 CSP Violation Report:', {
-    timestamp: new Date().toISOString(),
-    userAgent: req.headers['user-agent']?.substring(0, 100) + '...',
-    url: req.headers.referer || req.headers.origin,
-    violation: {
-      documentURI: violation['document-uri'],
-      violatedDirective: violation['violated-directive'],
-      blockedURI: violation['blocked-uri'],
-      sourceFile: violation['source-file'],
-      lineNumber: violation['line-number']
-    }
-  });
+  // Only log meaningful violations (filter out common false positives)
+  const blockedURI = violation['blocked-uri'];
+  const violatedDirective = violation['violated-directive'];
+  
+  // Filter out common false positives
+  const ignoredPatterns = [
+    'google-analytics.com',
+    'googletagmanager.com',
+    'chrome-extension:',
+    'moz-extension:',
+    'safari-extension:',
+    'about:blank',
+    'data:',
+    'blob:'
+  ];
+  
+  const shouldIgnore = ignoredPatterns.some(pattern => 
+    blockedURI?.includes(pattern) || violatedDirective?.includes(pattern)
+  );
+  
+  if (!shouldIgnore && violation['document-uri']) {
+    console.log('🚨 CSP Violation:', {
+      directive: violatedDirective,
+      blocked: blockedURI,
+      source: violation['source-file'],
+      line: violation['line-number']
+    });
+  }
   
   // In production, you might want to send this to a monitoring service
   if (process.env.NODE_ENV === 'production') {

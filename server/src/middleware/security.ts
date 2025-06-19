@@ -31,7 +31,6 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
     'magnetometer=()',
     'gyroscope=()',
     'accelerometer=()',
-    'ambient-light-sensor=()',
     'autoplay=(self)',
     'encrypted-media=(self)',
     'fullscreen=(self)',
