@@ -13,16 +13,15 @@ export const connectDB = async (): Promise<void> => {
     console.log('🔄 Attempting MongoDB connection...');
     console.log('🔗 URI format check:', mongoURI.substring(0, 20) + '...');
     
-    // MongoDB connection options optimized for Atlas
+    // Simplified connection options for better compatibility
     const options = {
-      // Connection timeouts
-      serverSelectionTimeoutMS: 15000, // 15 seconds
-      connectTimeoutMS: 15000, // 15 seconds
-      socketTimeoutMS: 30000, // 30 seconds
+      // Basic timeouts
+      serverSelectionTimeoutMS: 8000, // 8 seconds
+      connectTimeoutMS: 8000, // 8 seconds
+      socketTimeoutMS: 20000, // 20 seconds
       
-      // Buffer settings
-      bufferCommands: false,
-      maxPoolSize: 10,
+      // Connection pool settings
+      maxPoolSize: 5,
       minPoolSize: 1,
       
       // Retry settings
@@ -32,29 +31,42 @@ export const connectDB = async (): Promise<void> => {
       // Use IPv4 to avoid family errors
       family: 4,
       
-      // Authentication
-      authSource: 'admin',
-      
-      // SSL/TLS settings for Atlas
-      ssl: true,
+      // Buffer settings
+      bufferCommands: false,
       
       // Heartbeat settings
       heartbeatFrequencyMS: 10000,
       
       // Additional options for Atlas
-      maxIdleTimeMS: 30000
+      maxIdleTimeMS: 30000,
+      
+      // Force close sockets after timeout
+      forceServerObjectId: false
     };
 
     // Connect to MongoDB with proper error handling
     console.log('⏳ Connecting to MongoDB Atlas...');
     
-    // Set a timeout for the connection attempt
-    const connectionPromise = mongoose.connect(mongoURI, options);
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Connection timeout after 20 seconds')), 20000);
-    });
+    // Create connection with timeout wrapper
+    const connectWithTimeout = () => {
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Connection timeout after 8 seconds'));
+        }, 8000);
+        
+        mongoose.connect(mongoURI, options)
+          .then(() => {
+            clearTimeout(timeout);
+            resolve(true);
+          })
+          .catch((error) => {
+            clearTimeout(timeout);
+            reject(error);
+          });
+      });
+    };
     
-    await Promise.race([connectionPromise, timeoutPromise]);
+    await connectWithTimeout();
     
     console.log('✅ MongoDB connected successfully!');
     console.log(`📊 Database: ${mongoose.connection.db?.databaseName || 'stayfinder'}`);
@@ -69,42 +81,40 @@ export const connectDB = async (): Promise<void> => {
     console.log('\n❌ MongoDB connection failed:');
     console.log(`   Error: ${error.message}`);
     
-    // Provide specific error solutions
-    if (error.message.includes('timeout') || error.message.includes('ENOTFOUND')) {
+    // Provide specific error solutions based on error type
+    if (error.message.includes('timeout') || error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
       console.log('\n💡 NETWORK/TIMEOUT ISSUES - Try these solutions:');
-      console.log('   1. Check your internet connection');
-      console.log('   2. Verify MongoDB Atlas cluster is running');
-      console.log('   3. Confirm IP whitelist includes 0.0.0.0/0');
-      console.log('   4. Check if your network blocks MongoDB ports');
-      console.log('   5. Try restarting your MongoDB Atlas cluster');
-      console.log('   6. Verify cluster region is accessible from your location');
-      console.log('   7. Try using a VPN if your ISP blocks MongoDB');
-      console.log('   8. Check if you\'re behind a corporate firewall');
+      console.log('   1. ✅ Check your internet connection');
+      console.log('   2. ✅ Verify MongoDB Atlas cluster is running (not paused)');
+      console.log('   3. ✅ Add 0.0.0.0/0 to Network Access in MongoDB Atlas');
+      console.log('   4. ✅ Try connecting from a different network/location');
+      console.log('   5. ✅ Check if your ISP blocks MongoDB ports (27017)');
+      console.log('   6. ✅ Try using a VPN to bypass network restrictions');
+      console.log('   7. ✅ Test with MongoDB Compass first');
+      console.log('   8. ✅ Create cluster in different region (US East, Europe, etc.)');
     } else if (error.message.includes('authentication') || error.message.includes('auth')) {
       console.log('\n💡 AUTHENTICATION ISSUES - Try these solutions:');
-      console.log('   1. Verify username and password in connection string');
-      console.log('   2. Check if user has proper database permissions');
-      console.log('   3. Ensure password is URL-encoded (% symbols)');
-      console.log('   4. Try creating a new database user');
+      console.log('   1. ✅ Verify username and password in connection string');
+      console.log('   2. ✅ Check if user has proper database permissions');
+      console.log('   3. ✅ Ensure password is URL-encoded (% symbols)');
+      console.log('   4. ✅ Try creating a new database user');
     } else if (error.message.includes('parse') || error.message.includes('URI')) {
       console.log('\n💡 CONNECTION STRING ISSUES - Try these solutions:');
-      console.log('   1. Check connection string format');
-      console.log('   2. Ensure all special characters are URL-encoded');
-      console.log('   3. Verify cluster name and region');
-      console.log('   4. Get a fresh connection string from MongoDB Atlas');
+      console.log('   1. ✅ Check connection string format');
+      console.log('   2. ✅ Ensure all special characters are URL-encoded');
+      console.log('   3. ✅ Verify cluster name and region');
+      console.log('   4. ✅ Get a fresh connection string from MongoDB Atlas');
     }
     
-    console.log('\n🔧 QUICK FIXES TO TRY:');
-    console.log('   1. Restart your MongoDB Atlas cluster');
-    console.log('   2. Generate a new connection string');
-    console.log('   3. Try connecting from MongoDB Compass first');
-    console.log('   4. Check MongoDB Atlas status page');
-    console.log('   5. Add 0.0.0.0/0 to Network Access (allow all IPs)');
-    console.log('   6. Ensure cluster is not paused/sleeping');
-    console.log('   7. Try creating a new cluster in a different region');
-    console.log('   8. Test connection with MongoDB Compass first');
+    console.log('\n🔧 IMMEDIATE FIXES TO TRY:');
+    console.log('   1. 🚀 Go to MongoDB Atlas → Network Access → Add IP Address → 0.0.0.0/0');
+    console.log('   2. 🔄 Restart your MongoDB Atlas cluster');
+    console.log('   3. 🌍 Try creating a new cluster in US East region');
+    console.log('   4. 🧪 Test connection with MongoDB Compass first');
+    console.log('   5. 📱 Try from mobile hotspot to test network issues');
     
     console.log('\n⚠️  Server will continue without database connection');
+    console.log('📖 The app will use mock data and remain fully functional');
   }
   
   // Handle connection events
@@ -221,4 +231,26 @@ export const runConnectionDiagnostics = async (): Promise<void> => {
   }
   
   console.log('═'.repeat(50));
+};
+
+// Alternative connection method for troubleshooting
+export const connectWithAlternativeMethod = async (): Promise<void> => {
+  const mongoURI = process.env.MONGODB_URI;
+  if (!mongoURI) return;
+  
+  console.log('🔄 Trying alternative connection method...');
+  
+  try {
+    // Very basic connection options
+    const basicOptions = {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      family: 4
+    };
+    
+    await mongoose.connect(mongoURI, basicOptions);
+    console.log('✅ Alternative connection method successful!');
+  } catch (error: any) {
+    console.log('❌ Alternative connection also failed:', error.message);
+  }
 };

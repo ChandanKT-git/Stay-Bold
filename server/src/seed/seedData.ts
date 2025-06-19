@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { connectDB } from '../config/database';
+import { connectDB, connectWithAlternativeMethod } from '../config/database';
 import User from '../models/User';
 import Listing from '../models/Listing';
 import Booking from '../models/Booking';
@@ -1168,27 +1168,36 @@ const seedDatabase = async () => {
   try {
     console.log('🌱 Starting database seeding process...');
     
-    // Add timeout for connection
-    const connectionTimeout = setTimeout(() => {
-      console.log('❌ Database connection timeout - exiting seed process');
-      process.exit(1);
-    }, 15000); // 15 second timeout
-    
-    await connectDB();
-    clearTimeout(connectionTimeout);
+    // Try main connection first
+    try {
+      await connectDB();
+    } catch (mainError) {
+      console.log('🔄 Main connection failed, trying alternative method...');
+      await connectWithAlternativeMethod();
+    }
     
     // Check if actually connected
     if (mongoose.connection.readyState !== 1) {
       console.log('❌ Database not connected - cannot seed');
+      console.log('\n🔧 TROUBLESHOOTING STEPS:');
+      console.log('   1. 🌐 Check MongoDB Atlas cluster status');
+      console.log('   2. 🔒 Verify Network Access allows 0.0.0.0/0');
+      console.log('   3. 🔑 Confirm username/password in connection string');
+      console.log('   4. 🌍 Try different network (mobile hotspot)');
+      console.log('   5. 🧪 Test with MongoDB Compass first');
+      console.log('   6. 🔄 Restart MongoDB Atlas cluster');
+      console.log('   7. 🌎 Create new cluster in different region');
       process.exit(1);
     }
+    
+    console.log('✅ Database connected successfully! Starting seeding...');
     
     // Clear existing data
     await User.deleteMany({});
     await Listing.deleteMany({});
     await Booking.deleteMany({});
     
-    console.log('Cleared existing data');
+    console.log('🧹 Cleared existing data');
     
     // Create test users
     const hostUser = new User({
@@ -1232,7 +1241,7 @@ const seedDatabase = async () => {
     await guestUser.save();
     await guestUser2.save();
     
-    console.log('Created test users');
+    console.log('👥 Created test users');
     
     // Create sample listings with rotating hosts
     const hosts = [hostUser._id, hostUser2._id, hostUser3._id];
@@ -1246,7 +1255,7 @@ const seedDatabase = async () => {
       })
     );
     
-    console.log(`Created ${listings.length} Indian listings`);
+    console.log(`🏠 Created ${listings.length} Indian listings`);
     
     // Create sample bookings
     const sampleBookings = [
@@ -1291,7 +1300,7 @@ const seedDatabase = async () => {
       })
     );
     
-    console.log('Created sample bookings');
+    console.log('📅 Created sample bookings');
     
     console.log('\n🎉 STAYFINDER INDIA DATABASE SEEDED SUCCESSFULLY!');
     console.log('═'.repeat(70));
@@ -1330,7 +1339,15 @@ const seedDatabase = async () => {
     
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('❌ Error seeding database:', error);
+    console.log('\n🔧 TROUBLESHOOTING STEPS:');
+    console.log('   1. 🌐 Check MongoDB Atlas cluster status');
+    console.log('   2. 🔒 Verify Network Access allows 0.0.0.0/0');
+    console.log('   3. 🔑 Confirm username/password in connection string');
+    console.log('   4. 🌍 Try different network (mobile hotspot)');
+    console.log('   5. 🧪 Test with MongoDB Compass first');
+    console.log('   6. 🔄 Restart MongoDB Atlas cluster');
+    console.log('   7. 🌎 Create new cluster in different region');
     process.exit(1);
   }
 };
