@@ -64,6 +64,58 @@ const startServer = async () => {
     app.use('/api/bookings', bookingRoutes);
     app.use('/api', cspRoutes);
 
+    // Mock data endpoint for when database is not connected
+    app.get('/api/listings-mock', (req, res) => {
+      const mockListings = [
+        {
+          _id: '1',
+          title: 'Cozy Downtown Apartment',
+          description: 'A beautiful apartment in the heart of the city with modern amenities.',
+          price: 120,
+          location: 'New York, NY',
+          images: ['https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg'],
+          host: { _id: '1', name: 'John Doe' },
+          amenities: ['WiFi', 'Kitchen', 'Air Conditioning'],
+          maxGuests: 4,
+          bedrooms: 2,
+          bathrooms: 1,
+          coordinates: { lat: 40.7128, lng: -74.0060 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '2',
+          title: 'Beachfront Villa',
+          description: 'Luxurious villa right on the beach with private access.',
+          price: 350,
+          location: 'Miami, FL',
+          images: ['https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg'],
+          host: { _id: '1', name: 'Jane Smith' },
+          amenities: ['WiFi', 'Pool', 'Beach Access'],
+          maxGuests: 8,
+          bedrooms: 4,
+          bathrooms: 3,
+          coordinates: { lat: 25.7617, lng: -80.1918 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ];
+      
+      res.json({
+        success: true,
+        message: 'Mock listings (database not connected)',
+        data: {
+          listings: mockListings,
+          pagination: {
+            page: 1,
+            limit: 12,
+            total: 2,
+            pages: 1
+          }
+        }
+      });
+    });
+
     // Health check endpoint
     app.get('/api/health', (req, res) => {
       const dbState = mongoose.connection.readyState;

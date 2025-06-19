@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Booking from '../models/Booking';
@@ -84,19 +85,47 @@ export const createBooking = async (req: AuthRequest, res: Response) => {
 
 export const getUserBookings = async (req: AuthRequest, res: Response) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database not connected',
+        error: 'Service temporarily unavailable'
+      });
+    }
+
     const bookings = await Booking.find({ guest: req.user!.id })
       .populate('listing', 'title images location price')
       .sort({ createdAt: -1 });
 
-    res.json(bookings);
+    res.json({
+      success: true,
+      message: 'Bookings fetched successfully',
+      data: {
+        bookings
+      }
+    });
   } catch (error) {
     console.error('Get user bookings error:', error);
-    res.status(500).json({ message: 'Server error fetching bookings' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error fetching bookings',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
 export const getHostBookings = async (req: AuthRequest, res: Response) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database not connected',
+        error: 'Service temporarily unavailable'
+      });
+    }
+
     const bookings = await Booking.find()
       .populate({
         path: 'listing',
@@ -108,10 +137,20 @@ export const getHostBookings = async (req: AuthRequest, res: Response) => {
 
     const filteredBookings = bookings.filter(booking => booking.listing);
 
-    res.json(filteredBookings);
+    res.json({
+      success: true,
+      message: 'Host bookings fetched successfully',
+      data: {
+        bookings: filteredBookings
+      }
+    });
   } catch (error) {
     console.error('Get host bookings error:', error);
-    res.status(500).json({ message: 'Server error fetching host bookings' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error fetching host bookings',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 

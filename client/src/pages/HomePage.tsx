@@ -22,7 +22,18 @@ const HomePage: React.FC = () => {
         }
       });
 
-      const response = await api.get(`/api/listings?${params.toString()}`);
+      let response;
+      try {
+        response = await api.get(`/api/listings?${params.toString()}`);
+      } catch (apiError: any) {
+        // If main API fails, try mock data
+        if (apiError.response?.status === 500 || apiError.response?.status === 503) {
+          console.log('Main API failed, using mock data');
+          response = await api.get('/api/listings-mock');
+        } else {
+          throw apiError;
+        }
+      }
       
       if (response.data.success) {
         setListings(response.data.data.listings);

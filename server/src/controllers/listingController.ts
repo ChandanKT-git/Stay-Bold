@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Listing from '../models/Listing';
@@ -19,6 +20,15 @@ export const createListingValidation = [
 
 export const getListings = async (req: AuthRequest, res: Response) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database not connected',
+        error: 'Service temporarily unavailable'
+      });
+    }
+
     const {
       location,
       minPrice,
@@ -61,6 +71,9 @@ export const getListings = async (req: AuthRequest, res: Response) => {
     const total = await Listing.countDocuments(query);
 
     res.json({
+      success: true,
+      message: 'Listings fetched successfully',
+      data: {
       listings,
       pagination: {
         page: Number(page),
@@ -68,25 +81,53 @@ export const getListings = async (req: AuthRequest, res: Response) => {
         total,
         pages: Math.ceil(total / Number(limit))
       }
+      }
     });
   } catch (error) {
     console.error('Get listings error:', error);
-    res.status(500).json({ message: 'Server error fetching listings' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error fetching listings',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
 export const getListingById = async (req: AuthRequest, res: Response) => {
   try {
+    // Check if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database not connected',
+        error: 'Service temporarily unavailable'
+      });
+    }
+
     const listing = await Listing.findById(req.params.id).populate('host', 'name avatar email');
     
     if (!listing) {
-      return res.status(404).json({ message: 'Listing not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Listing not found' 
+      });
     }
 
-    res.json(listing);
+    res.json({
+      success: true,
+      message: 'Listing fetched successfully',
+      data: {
+        listing,
+        bookedDates: [] // Add empty array for now, can be populated later
+      }
+    });
   } catch (error) {
     console.error('Get listing error:', error);
-    res.status(500).json({ message: 'Server error fetching listing' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error fetching listing',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
