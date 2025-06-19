@@ -50,8 +50,10 @@ export const corsWithCSP = cors({
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:3000',
+      'http://localhost:5000',
       'http://127.0.0.1:5173',
       'http://127.0.0.1:3000',
+      'http://127.0.0.1:5000',
       process.env.CLIENT_URL,
       // Allow WebContainer origins
       /^https:\/\/.*\.webcontainer-api\.io$/,
@@ -74,11 +76,12 @@ export const corsWithCSP = cors({
     if (isAllowed) {
       callback(null, true);
     } else {
-      console.warn(`CORS blocked origin: ${origin}`);
       // In development, be more permissive
       if (process.env.NODE_ENV !== 'production') {
+        console.log(`CORS allowing origin in development: ${origin}`);
         callback(null, true);
       } else {
+        console.warn(`CORS blocked origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     }
