@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
+import { cspMiddleware } from './middleware/csp';
+import { securityHeaders, corsWithCSP } from './middleware/security';
 import authRoutes from './routes/auth';
 import listingRoutes from './routes/listings';
 import bookingRoutes from './routes/bookings';
@@ -16,7 +18,9 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(corsWithCSP);
+app.use(securityHeaders);
+app.use(cspMiddleware);
 app.use(express.json());
 
 // Routes
