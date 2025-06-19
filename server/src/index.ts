@@ -147,9 +147,12 @@ const startServer = async () => {
       console.log('🔄 SIGTERM received, shutting down gracefully...');
       server.close(() => {
         console.log('✅ HTTP server closed');
-        mongoose.connection.close(false, () => {
+        mongoose.connection.close().then(() => {
           console.log('✅ MongoDB connection closed');
           process.exit(0);
+        }).catch((error) => {
+          console.error('❌ Error closing MongoDB connection:', error);
+          process.exit(1);
         });
       });
     });
@@ -158,9 +161,12 @@ const startServer = async () => {
       console.log('\n🔄 SIGINT received, shutting down gracefully...');
       server.close(() => {
         console.log('✅ HTTP server closed');
-        mongoose.connection.close(false, () => {
+        mongoose.connection.close().then(() => {
           console.log('✅ MongoDB connection closed');
           process.exit(0);
+        }).catch((error) => {
+          console.error('❌ Error closing MongoDB connection:', error);
+          process.exit(1);
         });
       });
     });
@@ -174,12 +180,18 @@ const startServer = async () => {
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   console.error('❌ Uncaught Exception:', error);
-  process.exit(1);
+  // Try to close connections gracefully before exiting
+  mongoose.connection.close().finally(() => {
+    process.exit(1);
+  });
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
+  // Try to close connections gracefully before exiting
+  mongoose.connection.close().finally(() => {
+    process.exit(1);
+  });
 });
 
 // Start the server immediately
