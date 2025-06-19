@@ -8,21 +8,25 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
-    headers: {
-      // Remove CSP from Vite config since it's handled by the backend
-      // This prevents conflicts between frontend and backend CSP headers
-    },
+    // Remove any CSP headers from Vite to prevent conflicts
+    headers: {},
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
+        // Ensure proxy doesn't add conflicting headers
+        configure: (proxy, options) => {
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            // Remove any conflicting CSP headers from proxy responses
+            delete proxyRes.headers['content-security-policy'];
+            delete proxyRes.headers['content-security-policy-report-only'];
+          });
+        }
       },
     },
   },
   build: {
-    // Ensure proper source maps for CSP debugging
     sourcemap: true,
-    // Optimize chunks to reduce inline script needs
     rollupOptions: {
       output: {
         manualChunks: {

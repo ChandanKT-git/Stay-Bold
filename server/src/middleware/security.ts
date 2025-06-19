@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
+  // Only set non-CSP security headers here
+  // CSP is handled by the dedicated CSP middleware
+  
   // X-Frame-Options - Prevent clickjacking
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   
@@ -31,14 +34,12 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
   
-  // Cross-Origin-Embedder-Policy
-  res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
-  
-  // Cross-Origin-Opener-Policy
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-  
-  // Cross-Origin-Resource-Policy
-  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  // Cross-Origin policies for WebContainer compatibility
+  if (process.env.NODE_ENV !== 'production') {
+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
   
   next();
 };
@@ -52,17 +53,34 @@ export const corsWithCSP = cors({
       'http://127.0.0.1:5173',
       'http://127.0.0.1:3000',
       process.env.CLIENT_URL,
-      // Add your production domain here
+      // Allow WebContainer origins
+      /^https:\/\/.*\.webcontainer-api\.io$/,
+      /^https:\/\/.*\.local-credentialless\.webcontainer-api\.io$/,
     ].filter(Boolean);
     
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      } else if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.warn(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      // In development, be more permissive
+      if (process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -79,35 +97,3 @@ export const corsWithCSP = cors({
   maxAge: 86400, // 24 hours
   optionsSuccessStatus: 200
 });
-
-// Rate limiting middleware (optional)
-export const rateLimitByIP = (req: Request, res: Response, next: NextFunction) => {
-  // Simple in-memory rate limiting
-  const ip = req.ip || req.connection.remoteAddress;
-  const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxRequests = 100;
-  
-  // In production, use Redis or a proper rate limiting solution
-  if (!global.rateLimitStore) {
-    global.rateLimitStore = new Map();
-  }
-  
-  const key = `rate_limit_${ip}`;
-  const requests = global.rateLimitStore.get(key) || [];
-  
-  // Remove old requests outside the window
-  const validRequests = requests.filter((time: number) => now - time < windowMs);
-  
-  if (validRequests.length >= maxRequests) {
-    return res.status(429).json({
-      error: 'Too many requests',
-      message: 'Rate limit exceeded. Please try again later.'
-    });
-  }
-  
-  validRequests.push(now);
-  global.rateLimitStore.set(key, validRequests);
-  
-  next();
-};

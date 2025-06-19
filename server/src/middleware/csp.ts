@@ -1,32 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
 
 export const cspMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
+  // Remove any existing CSP headers that might conflict
+  res.removeHeader('Content-Security-Policy');
+  res.removeHeader('Content-Security-Policy-Report-Only');
   
   if (isDevelopment) {
-    // Development CSP - More permissive to allow dev tools and hot reloading
-    res.setHeader('Content-Security-Policy', [
-      "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: ws: wss:",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https://maps.googleapis.com https://maps.gstatic.com",
-      "script-src-elem 'self' 'unsafe-inline' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com",
-      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com",
-      "font-src 'self' data: blob: https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https: http: https://maps.googleapis.com https://maps.gstatic.com https://images.pexels.com",
+    // Very permissive CSP for development to allow all WebContainer functionality
+    const developmentCSP = [
+      "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: ws: wss: https: http:",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https: http:",
+      "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https: http:",
+      "style-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http:",
+      "style-src-elem 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http:",
+      "font-src 'self' 'unsafe-inline' data: blob: https: http:",
+      "img-src 'self' data: blob: https: http:",
       "connect-src 'self' ws: wss: https: http: blob: data:",
-      "frame-src 'self' blob:",
-      "worker-src 'self' blob:",
-      "child-src 'self' blob:",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'"
-    ].join('; '));
+      "frame-src 'self' blob: data: https: http:",
+      "worker-src 'self' blob: data: https: http:",
+      "child-src 'self' blob: data: https: http:",
+      "object-src 'self' data: blob:",
+      "media-src 'self' data: blob: https: http:",
+      "manifest-src 'self' data: blob:",
+      "base-uri 'self' data: blob:",
+      "form-action 'self' https: http:"
+    ].join('; ');
+    
+    res.setHeader('Content-Security-Policy', developmentCSP);
+    console.log('Applied development CSP:', developmentCSP);
   } else {
-    // Production CSP - Stricter with nonce support
+    // Production CSP with nonce support
     const nonce = generateNonce();
     res.locals.nonce = nonce;
     
-    res.setHeader('Content-Security-Policy', [
+    const productionCSP = [
       "default-src 'self'",
       `script-src 'self' 'nonce-${nonce}' blob: https://maps.googleapis.com https://maps.gstatic.com`,
       `script-src-elem 'self' 'nonce-${nonce}' blob: https://maps.googleapis.com https://maps.gstatic.com`,
@@ -42,7 +51,9 @@ export const cspMiddleware = (req: Request, res: Response, next: NextFunction) =
       "base-uri 'self'",
       "form-action 'self'",
       "upgrade-insecure-requests"
-    ].join('; '));
+    ].join('; ');
+    
+    res.setHeader('Content-Security-Policy', productionCSP);
   }
   
   next();
@@ -54,24 +65,19 @@ function generateNonce(): string {
   return crypto.randomBytes(16).toString('base64');
 }
 
-// Report-only CSP for testing (optional)
-export const cspReportOnly = (req: Request, res: Response, next: NextFunction) => {
-  const cspPolicy = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' blob:",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' data: https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https:",
-    "connect-src 'self' https:",
-    "report-uri /api/csp-report"
-  ].join('; ');
-  
-  res.setHeader('Content-Security-Policy-Report-Only', cspPolicy);
-  next();
-};
-
-// CSP violation reporting endpoint
+// CSP violation reporting endpoint handler
 export const cspReportHandler = (req: Request, res: Response) => {
   console.log('CSP Violation Report:', JSON.stringify(req.body, null, 2));
   res.status(204).end();
+};
+
+// Middleware to disable CSP entirely for development debugging
+export const disableCSPForDevelopment = (req: Request, res: Response, next: NextFunction) => {
+  if (process.env.NODE_ENV !== 'production' && process.env.DISABLE_CSP === 'true') {
+    console.log('CSP DISABLED FOR DEVELOPMENT DEBUGGING');
+    res.removeHeader('Content-Security-Policy');
+    res.removeHeader('Content-Security-Policy-Report-Only');
+    return next();
+  }
+  next();
 };
