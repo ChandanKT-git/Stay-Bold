@@ -23,8 +23,15 @@ const startServer = async () => {
     
     // Start database connection in background (non-blocking)
     console.log('🔄 Initializing database connection...');
+    
+    // Run connection diagnostics first
+    const { runConnectionDiagnostics } = await import('./config/database');
+    await runConnectionDiagnostics();
+    
+    // Attempt database connection
     connectDB().catch(error => {
       console.log('⚠️  Database connection failed - server continues without DB');
+      console.log('💡 Check the diagnostics above for specific solutions');
     });
     
     // Apply middleware in correct order for security

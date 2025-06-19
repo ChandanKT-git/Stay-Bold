@@ -10,14 +10,15 @@ export const connectDB = async (): Promise<void> => {
       return;
     }
 
-    console.log('🔄 Starting MongoDB connection (non-blocking)...');
+    console.log('🔄 Attempting MongoDB connection...');
+    console.log('🔗 URI format check:', mongoURI.substring(0, 20) + '...');
     
     // MongoDB connection options optimized for Atlas
     const options = {
-      // Very short timeouts to prevent hanging
-      serverSelectionTimeoutMS: 2000, // 2 seconds
-      connectTimeoutMS: 3000, // 3 seconds
-      socketTimeoutMS: 5000, // 5 seconds
+      // Connection timeouts
+      serverSelectionTimeoutMS: 10000, // 10 seconds
+      connectTimeoutMS: 10000, // 10 seconds
+      socketTimeoutMS: 45000, // 45 seconds
       
       // Buffer settings
       bufferCommands: false,
@@ -28,9 +29,6 @@ export const connectDB = async (): Promise<void> => {
       retryWrites: true,
       retryReads: true,
       
-      // Database name
-      dbName: 'stayfinder',
-      
       // Use IPv4 to avoid family errors
       family: 4,
       
@@ -38,63 +36,82 @@ export const connectDB = async (): Promise<void> => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       
+      // Authentication
+      authSource: 'admin',
+      
       // SSL/TLS settings for Atlas
       ssl: true,
-      sslValidate: true,
       
-      // Authentication
-      authSource: 'admin'
+      // Heartbeat settings
+      heartbeatFrequencyMS: 10000,
+      
+      // Additional options for Atlas
+      maxIdleTimeMS: 30000,
+      serverSelectionRetryDelayMS: 2000
     };
 
-    // Connect to MongoDB with timeout handling
-    const connectionPromise = mongoose.connect(mongoURI, options);
+    // Connect to MongoDB with proper error handling
+    console.log('⏳ Connecting to MongoDB Atlas...');
     
-    // Set up a timeout to prevent hanging
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Connection timeout after 5 seconds')), 5000);
-    });
+    await mongoose.connect(mongoURI, options);
     
-    try {
-      await Promise.race([connectionPromise, timeoutPromise]);
-      console.log('✅ MongoDB connected successfully');
-      console.log(`📊 Database: ${mongoose.connection.db.databaseName}`);
-      console.log(`🔗 Connection State: ${getConnectionState(mongoose.connection.readyState)}`);
-    } catch (timeoutError) {
-      console.log('⏰ MongoDB connection timed out - continuing without database');
-      console.log('💡 This is usually an IP whitelist issue in MongoDB Atlas');
-      console.log('🔧 Add 0.0.0.0/0 to Network Access in MongoDB Atlas to fix');
-    }
+    console.log('✅ MongoDB connected successfully!');
+    console.log(`📊 Database: ${mongoose.connection.db?.databaseName || 'stayfinder'}`);
+    console.log(`🔗 Connection State: ${getConnectionState(mongoose.connection.readyState)}`);
+    console.log(`🌐 Host: ${mongoose.connection.host}`);
     
-    // Handle connection events
-    mongoose.connection.on('connected', () => {
-      console.log('🎉 MongoDB connected successfully!');
-    });
-    
-    mongoose.connection.on('error', (error) => {
-      console.log('❌ MongoDB connection error:', error.message);
-    });
-    
-    mongoose.connection.on('disconnected', () => {
-      console.log('⚠️  MongoDB disconnected');
-    });
-    
-    mongoose.connection.on('reconnected', () => {
-      console.log('🔄 MongoDB reconnected');
-    });
+    // Test the connection with a simple operation
+    await mongoose.connection.db?.admin().ping();
+    console.log('🏓 Database ping successful - connection is healthy');
     
   } catch (error: any) {
-    console.log('❌ MongoDB connection failed:', error.message);
-    console.log('⚠️  Server will continue without database connection');
+    console.log('\n❌ MongoDB connection failed:');
+    console.log(`   Error: ${error.message}`);
     
     // Provide specific error solutions
-    if (error.message.includes('timeout')) {
-      console.log('\n💡 LIKELY SOLUTION: IP Whitelist Issue');
-      console.log('   1. Go to MongoDB Atlas Dashboard');
-      console.log('   2. Navigate to Network Access');
-      console.log('   3. Add IP Address: 0.0.0.0/0');
-      console.log('   4. Wait 1-2 minutes and restart server');
+    if (error.message.includes('timeout') || error.message.includes('ENOTFOUND')) {
+      console.log('\n💡 NETWORK/TIMEOUT ISSUES - Try these solutions:');
+      console.log('   1. Check your internet connection');
+      console.log('   2. Verify MongoDB Atlas cluster is running');
+      console.log('   3. Confirm IP whitelist includes 0.0.0.0/0');
+      console.log('   4. Check if your network blocks MongoDB ports');
+    } else if (error.message.includes('authentication') || error.message.includes('auth')) {
+      console.log('\n💡 AUTHENTICATION ISSUES - Try these solutions:');
+      console.log('   1. Verify username and password in connection string');
+      console.log('   2. Check if user has proper database permissions');
+      console.log('   3. Ensure password is URL-encoded (% symbols)');
+    } else if (error.message.includes('parse') || error.message.includes('URI')) {
+      console.log('\n💡 CONNECTION STRING ISSUES - Try these solutions:');
+      console.log('   1. Check connection string format');
+      console.log('   2. Ensure all special characters are URL-encoded');
+      console.log('   3. Verify cluster name and region');
     }
+    
+    console.log('\n🔧 QUICK FIXES TO TRY:');
+    console.log('   1. Restart your MongoDB Atlas cluster');
+    console.log('   2. Generate a new connection string');
+    console.log('   3. Try connecting from MongoDB Compass first');
+    console.log('   4. Check MongoDB Atlas status page');
+    
+    console.log('\n⚠️  Server will continue without database connection');
   }
+  
+  // Handle connection events
+  mongoose.connection.on('connected', () => {
+    console.log('🎉 MongoDB connected successfully!');
+  });
+  
+  mongoose.connection.on('error', (error) => {
+    console.log('❌ MongoDB connection error:', error.message);
+  });
+  
+  mongoose.connection.on('disconnected', () => {
+    console.log('⚠️  MongoDB disconnected');
+  });
+  
+  mongoose.connection.on('reconnected', () => {
+    console.log('🔄 MongoDB reconnected');
+  });
 };
 
 // Helper function to get connection state description
@@ -108,26 +125,7 @@ function getConnectionState(state: number): string {
   return states[state as keyof typeof states] || 'Unknown';
 }
 
-// Simplified quick test that doesn't block
-export const quickConnectionTest = async (): Promise<void> => {
-  const mongoURI = process.env.MONGODB_URI;
-  
-  if (!mongoURI) {
-    console.log('⚠️  MONGODB_URI not found in environment variables');
-    return;
-  }
-  
-  console.log('🔍 Quick connection test (non-blocking)...');
-  
-  // Don't actually test - just log and continue
-  // This prevents the hanging issue
-  console.log('✅ Skipping connection test to prevent hanging');
-  console.log('🚀 Server will start immediately');
-  
-  return Promise.resolve();
-};
-
-// Test database connection with ping (only if already connected)
+// Test database connection with detailed diagnostics
 export const testConnection = async (): Promise<boolean> => {
   try {
     if (mongoose.connection.readyState !== 1) {
@@ -136,11 +134,80 @@ export const testConnection = async (): Promise<boolean> => {
     }
     
     console.log('🏓 Testing database connection...');
-    await mongoose.connection.db.admin().ping();
+    await mongoose.connection.db?.admin().ping();
     console.log('✅ Database ping successful - connection is healthy');
     return true;
   } catch (error: any) {
     console.log('❌ Database ping failed:', error.message);
     return false;
   }
+};
+
+// Validate MongoDB URI format
+export const validateMongoURI = (uri: string): { valid: boolean; issues: string[] } => {
+  const issues: string[] = [];
+  
+  if (!uri) {
+    issues.push('URI is empty or undefined');
+    return { valid: false, issues };
+  }
+  
+  if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+    issues.push('URI must start with mongodb:// or mongodb+srv://');
+  }
+  
+  if (uri.includes('mongodb+srv://') && !uri.includes('@')) {
+    issues.push('Atlas URI missing authentication credentials');
+  }
+  
+  if (uri.includes('<password>') || uri.includes('<username>')) {
+    issues.push('URI contains placeholder values - replace with actual credentials');
+  }
+  
+  // Check for common encoding issues
+  if (uri.includes(' ')) {
+    issues.push('URI contains spaces - may need URL encoding');
+  }
+  
+  return { valid: issues.length === 0, issues };
+};
+
+// Connection diagnostics
+export const runConnectionDiagnostics = async (): Promise<void> => {
+  console.log('\n🔍 Running MongoDB Connection Diagnostics...');
+  console.log('═'.repeat(50));
+  
+  const mongoURI = process.env.MONGODB_URI;
+  
+  // 1. Check if URI exists
+  console.log('1. Environment Variable Check:');
+  if (mongoURI) {
+    console.log('   ✅ MONGODB_URI is set');
+    console.log(`   📝 URI preview: ${mongoURI.substring(0, 30)}...`);
+  } else {
+    console.log('   ❌ MONGODB_URI is not set');
+    return;
+  }
+  
+  // 2. Validate URI format
+  console.log('\n2. URI Format Validation:');
+  const validation = validateMongoURI(mongoURI);
+  if (validation.valid) {
+    console.log('   ✅ URI format appears valid');
+  } else {
+    console.log('   ❌ URI format issues found:');
+    validation.issues.forEach(issue => console.log(`      - ${issue}`));
+  }
+  
+  // 3. Check connection state
+  console.log('\n3. Current Connection State:');
+  const state = mongoose.connection.readyState;
+  console.log(`   📊 State: ${getConnectionState(state)} (${state})`);
+  
+  if (state === 1) {
+    console.log(`   🌐 Host: ${mongoose.connection.host}`);
+    console.log(`   📊 Database: ${mongoose.connection.db?.databaseName}`);
+  }
+  
+  console.log('═'.repeat(50));
 };
