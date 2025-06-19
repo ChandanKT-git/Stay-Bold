@@ -36,235 +36,261 @@ const TRUSTED_DOMAINS = {
   ]
 };
 
+// Cache CSP policies to avoid regenerating them on every request
+let developmentCSP: string | null = null;
+let productionCSPTemplate: string | null = null;
+
+function buildDevelopmentCSP(): string {
+  if (developmentCSP) return developmentCSP;
+  
+  developmentCSP = [
+    // Default policy - allow self and common data sources
+    "default-src 'self' data: blob:",
+    
+    // Scripts - Allow development tools and hot reloading
+    [
+      "script-src 'self'",
+      "'unsafe-inline'", // Required for development hot reloading
+      "'unsafe-eval'", // Required for development tools
+      "blob:",
+      "data:",
+      "ws:",
+      "wss:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Script elements (for external scripts)
+    [
+      "script-src-elem 'self'",
+      "'unsafe-inline'",
+      "blob:",
+      "data:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Styles - Allow inline styles for CSS-in-JS
+    [
+      "style-src 'self'",
+      "'unsafe-inline'", // Required for CSS-in-JS and dynamic styles
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Style elements
+    [
+      "style-src-elem 'self'",
+      "'unsafe-inline'",
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Fonts
+    [
+      "font-src 'self'",
+      "data:",
+      "blob:",
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS
+    ].join(' '),
+    
+    // Images - Allow all HTTPS and development sources
+    [
+      "img-src 'self'",
+      "data:",
+      "blob:",
+      "https:",
+      "http:", // Allow HTTP in development
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.IMAGES
+    ].join(' '),
+    
+    // Network connections
+    [
+      "connect-src 'self'",
+      "ws:",
+      "wss:",
+      "https:",
+      "http:", // Allow HTTP in development
+      "blob:",
+      "data:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Frames for embedded content
+    [
+      "frame-src 'self'",
+      "blob:",
+      ...TRUSTED_DOMAINS.STRIPE,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Workers for background processing
+    "worker-src 'self' blob: data:",
+    
+    // Child contexts
+    "child-src 'self' blob:",
+    
+    // Media sources
+    "media-src 'self' data: blob: https:",
+    
+    // Manifest files
+    "manifest-src 'self'",
+    
+    // Object and embed (disabled for security)
+    "object-src 'none'",
+    
+    // Base URI restriction
+    "base-uri 'self'",
+    
+    // Form submission restriction
+    "form-action 'self'"
+  ].join('; ');
+  
+  return developmentCSP;
+}
+
+function buildProductionCSP(nonce: string): string {
+  return [
+    // Default policy - strict self-only
+    "default-src 'self'",
+    
+    // Scripts - Nonce-based with specific trusted domains
+    [
+      "script-src 'self'",
+      `'nonce-${nonce}'`,
+      "blob:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Script elements
+    [
+      "script-src-elem 'self'",
+      `'nonce-${nonce}'`,
+      "blob:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Styles - Allow inline for CSS-in-JS (consider moving to nonce in future)
+    [
+      "style-src 'self'",
+      "'unsafe-inline'", // TODO: Replace with nonce-based styles
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Style elements
+    [
+      "style-src-elem 'self'",
+      "'unsafe-inline'",
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Fonts
+    [
+      "font-src 'self'",
+      "data:",
+      ...TRUSTED_DOMAINS.GOOGLE_FONTS
+    ].join(' '),
+    
+    // Images - HTTPS only in production
+    [
+      "img-src 'self'",
+      "data:",
+      "https:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.IMAGES
+    ].join(' '),
+    
+    // Network connections - HTTPS only
+    [
+      "connect-src 'self'",
+      "https:",
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS,
+      ...TRUSTED_DOMAINS.FIREBASE,
+      ...TRUSTED_DOMAINS.STRIPE
+    ].join(' '),
+    
+    // Frames
+    [
+      "frame-src 'self'",
+      ...TRUSTED_DOMAINS.STRIPE,
+      ...TRUSTED_DOMAINS.GOOGLE_MAPS
+    ].join(' '),
+    
+    // Workers
+    "worker-src 'self' blob:",
+    
+    // Child contexts
+    "child-src 'self' blob:",
+    
+    // Media
+    "media-src 'self' data: https:",
+    
+    // Manifest
+    "manifest-src 'self'",
+    
+    // Security restrictions
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    
+    // Force HTTPS
+    "upgrade-insecure-requests",
+    
+    // Block mixed content
+    "block-all-mixed-content"
+  ].join('; ');
+}
+
+// Track if CSP has been logged for this server session
+let cspLogged = false;
+
 export const cspMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  // Skip CSP for API endpoints that don't serve HTML content
+  if (req.path.startsWith('/api/') && !req.path.includes('/csp-test')) {
+    return next();
+  }
+  
   const isDevelopment = process.env.NODE_ENV !== 'production';
   
   // Remove any existing CSP headers that might conflict
   res.removeHeader('Content-Security-Policy');
   res.removeHeader('Content-Security-Policy-Report-Only');
   
-  // Generate nonce for this request
-  const nonce = generateNonce();
-  res.locals.nonce = nonce;
-  
   if (isDevelopment) {
-    // Development CSP - More permissive for development tools
-    const developmentCSP = [
-      // Default policy - allow self and common data sources
-      "default-src 'self' data: blob:",
-      
-      // Scripts - Allow development tools and hot reloading
-      [
-        "script-src 'self'",
-        "'unsafe-inline'", // Required for development hot reloading
-        "'unsafe-eval'", // Required for development tools
-        `'nonce-${nonce}'`,
-        "blob:",
-        "data:",
-        "ws:",
-        "wss:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Script elements (for external scripts)
-      [
-        "script-src-elem 'self'",
-        "'unsafe-inline'",
-        `'nonce-${nonce}'`,
-        "blob:",
-        "data:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Styles - Allow inline styles for CSS-in-JS
-      [
-        "style-src 'self'",
-        "'unsafe-inline'", // Required for CSS-in-JS and dynamic styles
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Style elements
-      [
-        "style-src-elem 'self'",
-        "'unsafe-inline'",
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Fonts
-      [
-        "font-src 'self'",
-        "data:",
-        "blob:",
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS
-      ].join(' '),
-      
-      // Images - Allow all HTTPS and development sources
-      [
-        "img-src 'self'",
-        "data:",
-        "blob:",
-        "https:",
-        "http:", // Allow HTTP in development
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.IMAGES
-      ].join(' '),
-      
-      // Network connections
-      [
-        "connect-src 'self'",
-        "ws:",
-        "wss:",
-        "https:",
-        "http:", // Allow HTTP in development
-        "blob:",
-        "data:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Frames for embedded content
-      [
-        "frame-src 'self'",
-        "blob:",
-        ...TRUSTED_DOMAINS.STRIPE,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Workers for background processing
-      "worker-src 'self' blob: data:",
-      
-      // Child contexts
-      "child-src 'self' blob:",
-      
-      // Media sources
-      "media-src 'self' data: blob: https:",
-      
-      // Manifest files
-      "manifest-src 'self'",
-      
-      // Object and embed (disabled for security)
-      "object-src 'none'",
-      
-      // Base URI restriction
-      "base-uri 'self'",
-      
-      // Form submission restriction
-      "form-action 'self'",
-      
-      // Upgrade insecure requests in development (optional)
-      // "upgrade-insecure-requests"
-    ].join('; ');
+    // Use cached development CSP
+    const devCSP = buildDevelopmentCSP();
+    res.setHeader('Content-Security-Policy', devCSP);
     
-    res.setHeader('Content-Security-Policy', developmentCSP);
-    console.log('Applied development CSP with nonce:', nonce.substring(0, 8) + '...');
+    // Only log once per server restart
+    if (!cspLogged) {
+      console.log('✅ Applied development CSP (permissive for development tools)');
+      cspLogged = true;
+    }
     
   } else {
-    // Production CSP - Strict security with nonce-based execution
-    const productionCSP = [
-      // Default policy - strict self-only
-      "default-src 'self'",
-      
-      // Scripts - Nonce-based with specific trusted domains
-      [
-        "script-src 'self'",
-        `'nonce-${nonce}'`,
-        "blob:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Script elements
-      [
-        "script-src-elem 'self'",
-        `'nonce-${nonce}'`,
-        "blob:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Styles - Allow inline for CSS-in-JS (consider moving to nonce in future)
-      [
-        "style-src 'self'",
-        "'unsafe-inline'", // TODO: Replace with nonce-based styles
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Style elements
-      [
-        "style-src-elem 'self'",
-        "'unsafe-inline'",
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Fonts
-      [
-        "font-src 'self'",
-        "data:",
-        ...TRUSTED_DOMAINS.GOOGLE_FONTS
-      ].join(' '),
-      
-      // Images - HTTPS only in production
-      [
-        "img-src 'self'",
-        "data:",
-        "https:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.IMAGES
-      ].join(' '),
-      
-      // Network connections - HTTPS only
-      [
-        "connect-src 'self'",
-        "https:",
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS,
-        ...TRUSTED_DOMAINS.FIREBASE,
-        ...TRUSTED_DOMAINS.STRIPE
-      ].join(' '),
-      
-      // Frames
-      [
-        "frame-src 'self'",
-        ...TRUSTED_DOMAINS.STRIPE,
-        ...TRUSTED_DOMAINS.GOOGLE_MAPS
-      ].join(' '),
-      
-      // Workers
-      "worker-src 'self' blob:",
-      
-      // Child contexts
-      "child-src 'self' blob:",
-      
-      // Media
-      "media-src 'self' data: https:",
-      
-      // Manifest
-      "manifest-src 'self'",
-      
-      // Security restrictions
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      
-      // Force HTTPS
-      "upgrade-insecure-requests",
-      
-      // Block mixed content
-      "block-all-mixed-content"
-    ].join('; ');
+    // Generate nonce for production
+    const nonce = generateNonce();
+    res.locals.nonce = nonce;
     
-    res.setHeader('Content-Security-Policy', productionCSP);
-    console.log('Applied production CSP with nonce:', nonce.substring(0, 8) + '...');
+    const prodCSP = buildProductionCSP(nonce);
+    res.setHeader('Content-Security-Policy', prodCSP);
+    
+    // Only log once per server restart
+    if (!cspLogged) {
+      console.log('🔒 Applied production CSP (strict nonce-based security)');
+      cspLogged = true;
+    }
   }
   
   next();
@@ -275,18 +301,16 @@ export const cspReportHandler = (req: Request, res: Response) => {
   const violation = req.body;
   
   // Log the violation with useful details
-  console.log('CSP Violation Report:', {
+  console.log('🚨 CSP Violation Report:', {
     timestamp: new Date().toISOString(),
-    userAgent: req.headers['user-agent'],
+    userAgent: req.headers['user-agent']?.substring(0, 100) + '...',
     url: req.headers.referer || req.headers.origin,
     violation: {
       documentURI: violation['document-uri'],
       violatedDirective: violation['violated-directive'],
       blockedURI: violation['blocked-uri'],
-      originalPolicy: violation['original-policy'],
       sourceFile: violation['source-file'],
-      lineNumber: violation['line-number'],
-      columnNumber: violation['column-number']
+      lineNumber: violation['line-number']
     }
   });
   

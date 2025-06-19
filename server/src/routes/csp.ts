@@ -8,7 +8,7 @@ router.post('/csp-report', cspReportHandler);
 
 // CSP testing endpoint for development
 router.get('/csp-test', (req: Request, res: Response) => {
-  const nonce = res.locals.nonce;
+  const nonce = res.locals.nonce || 'development-mode-no-nonce-needed';
   
   const testHTML = `
 <!DOCTYPE html>
@@ -112,13 +112,14 @@ router.get('/csp-test', (req: Request, res: Response) => {
 
 // Endpoint to get current CSP policy (for debugging)
 router.get('/csp-policy', (req: Request, res: Response) => {
-  const cspHeader = res.getHeader('Content-Security-Policy');
+  const cspHeader = res.getHeader('Content-Security-Policy') || 'No CSP policy set';
   
   res.json({
     environment: process.env.NODE_ENV || 'development',
     cspDisabled: process.env.DISABLE_CSP === 'true',
-    currentNonce: res.locals.nonce,
-    cspPolicy: cspHeader ? cspHeader.toString() : 'No CSP policy set',
+    currentNonce: res.locals.nonce || 'Not applicable in development',
+    cspPolicy: cspHeader.toString(),
+    cspLength: cspHeader.toString().length,
     timestamp: new Date().toISOString()
   });
 });

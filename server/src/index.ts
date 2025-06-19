@@ -62,6 +62,8 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`CSP Disabled: ${process.env.DISABLE_CSP === 'true' ? 'YES' : 'NO'}`);
-  console.log(`CSP Test Page: http://localhost:${PORT}/api/csp-test`);
-  console.log(`CSP Policy Info: http://localhost:${PORT}/api/csp-policy`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`CSP Test Page: http://localhost:${PORT}/api/csp-test`);
+    console.log(`CSP Policy Info: http://localhost:${PORT}/api/csp-policy`);
+  }
 });
