@@ -41,10 +41,13 @@ export interface Booking {
   startDate: string;
   endDate: string;
   totalPrice: number;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   createdAt: string;
   updatedAt: string;
 }
+
+// Export the status type for reuse
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
 
 export interface SearchFilters {
   location?: string;

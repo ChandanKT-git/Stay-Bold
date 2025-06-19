@@ -1,6 +1,9 @@
 import { Request } from 'express';
 import { Document } from 'mongoose';
 
+// Booking status type
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
 export interface IUser extends Document {
   _id: string;
   name: string;
@@ -42,7 +45,7 @@ export interface IBooking extends Document {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: BookingStatus;
   createdAt: Date;
   updatedAt: Date;
 }

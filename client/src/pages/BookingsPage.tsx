@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, X } from 'lucide-react';
-import { Booking } from '../types';
+import { Booking, BookingStatus } from '../types';
 import api from '../utils/api';
 import { format } from 'date-fns';
 
@@ -40,7 +40,7 @@ const BookingsPage: React.FC = () => {
         setBookings(prev => 
           prev.map(booking => 
             booking._id === bookingId 
-              ? { ...booking, status: 'cancelled' as const }
+              ? { ...booking, status: 'cancelled' as BookingStatus }
               : booking
           )
         );
@@ -105,7 +105,9 @@ const BookingsPage: React.FC = () => {
                         ? 'bg-green-100 text-green-800'
                         : booking.status === 'pending'
                         ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
+                        : booking.status === 'cancelled'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-blue-100 text-blue-800' // for 'completed' status
                     }`}>
                       {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                     </span>

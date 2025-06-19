@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit, Trash2, Eye, Calendar } from 'lucide-react';
-import { Listing, Booking } from '../types';
+import { Listing, Booking, BookingStatus } from '../types';
 import api from '../utils/api';
 
 const HostDashboard: React.FC = () => {
@@ -185,7 +185,9 @@ const HostDashboard: React.FC = () => {
                           ? 'bg-green-100 text-green-800'
                           : booking.status === 'pending'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
+                          : booking.status === 'cancelled'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-blue-100 text-blue-800' // for 'completed' status
                       }`}>
                         {booking.status}
                       </span>

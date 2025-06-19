@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import Booking from '../models/Booking';
 import Listing from '../models/Listing';
-import { AuthRequest } from '../types';
+import { AuthRequest, BookingStatus } from '../types';
 
 export const createBookingValidation = [
   body('listing').isMongoId().withMessage('Valid listing ID is required'),
@@ -135,7 +135,7 @@ export const cancelBooking = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Booking is already cancelled' });
     }
 
-    booking.status = 'cancelled';
+    booking.status = 'cancelled' as BookingStatus;
     await booking.save();
 
     res.json({

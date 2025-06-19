@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IBooking } from '../types';
+import { IBooking, BookingStatus } from '../types';
 
 const bookingSchema = new Schema<IBooking>({
   listing: {
@@ -33,7 +33,7 @@ const bookingSchema = new Schema<IBooking>({
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'cancelled'],
+    enum: ['pending', 'confirmed', 'cancelled', 'completed'] as BookingStatus[],
     default: 'pending'
   }
 }, {
