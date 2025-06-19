@@ -69,33 +69,241 @@ const startServer = async () => {
       const mockListings = [
         {
           _id: '1',
-          title: 'Cozy Downtown Apartment',
-          description: 'A beautiful apartment in the heart of the city with modern amenities.',
-          price: 120,
-          location: 'New York, NY',
+          title: 'Luxury Sea View Apartment in Bandra West',
+          description: 'Experience Mumbai\'s glamour from this stunning 3BHK apartment with panoramic Arabian Sea views.',
+          price: 8500,
+          location: 'Mumbai, Maharashtra',
           images: ['https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg'],
-          host: { _id: '1', name: 'John Doe' },
-          amenities: ['WiFi', 'Kitchen', 'Air Conditioning'],
-          maxGuests: 4,
-          bedrooms: 2,
-          bathrooms: 1,
-          coordinates: { lat: 40.7128, lng: -74.0060 },
+          host: { _id: '1', name: 'Rajesh Kumar' },
+          amenities: ['WiFi', 'AC', 'Kitchen', 'Swimming Pool', 'Sea View'],
+          maxGuests: 6,
+          bedrooms: 3,
+          bathrooms: 2,
+          coordinates: { lat: 19.0596, lng: 72.8261 },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         },
         {
           _id: '2',
-          title: 'Beachfront Villa',
-          description: 'Luxurious villa right on the beach with private access.',
-          price: 350,
-          location: 'Miami, FL',
-          images: ['https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg'],
-          host: { _id: '1', name: 'Jane Smith' },
-          amenities: ['WiFi', 'Pool', 'Beach Access'],
+          title: 'Heritage Haveli in Chandni Chowk',
+          description: 'Restored 18th-century haveli in Old Delhi\'s heart with Mughal architecture.',
+          price: 6500,
+          location: 'New Delhi, Delhi',
+          images: ['https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg'],
+          host: { _id: '2', name: 'Priya Sharma' },
+          amenities: ['WiFi', 'AC', 'Heritage Architecture', 'Courtyard', 'Cultural Tours'],
           maxGuests: 8,
           bedrooms: 4,
           bathrooms: 3,
-          coordinates: { lat: 25.7617, lng: -80.1918 },
+          coordinates: { lat: 28.6562, lng: 77.2300 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '3',
+          title: 'Tech Hub Apartment in Koramangala',
+          description: 'Modern apartment in Bangalore\'s Silicon Valley with high-speed internet.',
+          price: 4500,
+          location: 'Bangalore, Karnataka',
+          images: ['https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg'],
+          host: { _id: '3', name: 'Arjun Singh' },
+          amenities: ['High-Speed WiFi', 'AC', 'Kitchen', 'Co-working Space', 'Tech Hub'],
+          maxGuests: 3,
+          bedrooms: 2,
+          bathrooms: 1,
+          coordinates: { lat: 12.9352, lng: 77.6309 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '4',
+          title: 'Beachfront Villa in Calangute',
+          description: 'Stunning villa with direct beach access to Calangute Beach in Goa.',
+          price: 15000,
+          location: 'Goa, Goa',
+          images: ['https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg'],
+          host: { _id: '1', name: 'Rajesh Kumar' },
+          amenities: ['Beach Access', 'Infinity Pool', 'Ocean View', 'Water Sports'],
+          maxGuests: 12,
+          bedrooms: 6,
+          bathrooms: 4,
+          coordinates: { lat: 15.5430, lng: 73.7549 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '5',
+          title: 'Royal Palace Suite in Jaipur',
+          description: 'Magnificent palace suite in Pink City with City Palace views.',
+          price: 18000,
+          location: 'Jaipur, Rajasthan',
+          images: ['https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg'],
+          host: { _id: '2', name: 'Priya Sharma' },
+          amenities: ['Royal Architecture', 'Palace Views', 'Traditional Decor', 'Cultural Heritage'],
+          maxGuests: 4,
+          bedrooms: 2,
+          bathrooms: 2,
+          coordinates: { lat: 26.9260, lng: 75.8267 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '6',
+          title: 'Backwater Houseboat in Alleppey',
+          description: 'Traditional Kerala houseboat floating through serene backwaters.',
+          price: 12000,
+          location: 'Alleppey, Kerala',
+          images: ['https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg'],
+          host: { _id: '3', name: 'Arjun Singh' },
+          amenities: ['Backwater Views', 'Traditional Houseboat', 'Local Cuisine', 'Village Life'],
+          maxGuests: 4,
+          bedrooms: 2,
+          bathrooms: 1,
+          coordinates: { lat: 9.4981, lng: 76.3388 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '7',
+          title: 'Yoga Ashram in Rishikesh',
+          description: 'Authentic ashram on Ganges banks with daily yoga and meditation.',
+          price: 3500,
+          location: 'Rishikesh, Uttarakhand',
+          images: ['https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg'],
+          host: { _id: '1', name: 'Rajesh Kumar' },
+          amenities: ['Yoga Classes', 'Meditation', 'Ganges Views', 'Spiritual Teachings'],
+          maxGuests: 2,
+          bedrooms: 1,
+          bathrooms: 1,
+          coordinates: { lat: 30.0869, lng: 78.2676 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          _id: '8',
+          title: 'Taj Mahal View Hotel in Agra',
+          description: 'Heritage hotel with iconic Taj Mahal views and Mughal grandeur.',
+          price: 11000,
+          location: 'Agra, Uttar Pradesh',
+          images: ['https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg'],
+          host: { _id: '2', name: 'Priya Sharma' },
+          amenities: ['Taj Mahal Views', 'Heritage Hotel', 'Mughal Architecture', 'Cultural Tours'],
+          maxGuests: 4,
+          bedrooms: 2,
+          bathrooms: 2,
+          coordinates: { lat: 27.1750, lng: 78.0421 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ];
+      
+      res.json({
+        success: true,
+        message: 'Indian properties loaded (database not connected)',
+        data: {
+          listings: mockListings,
+          pagination: {
+            page: 1,
+            limit: 12,
+            total: mockListings.length,
+            pages: 1
+          }
+        }
+      });
+    });
+
+    // Additional mock endpoint for single listing
+    app.get('/api/listings-mock/:id', (req, res) => {
+      const mockListing = {
+        _id: req.params.id,
+        title: 'Luxury Sea View Apartment in Bandra West',
+        description: 'Experience Mumbai\'s glamour from this stunning 3BHK apartment with panoramic Arabian Sea views. Located in Bandra\'s elite Hill Road area, featuring contemporary furnishings, modular kitchen, and premium amenities including infinity pool and state-of-the-art gym.',
+        price: 8500,
+        location: 'Mumbai, Maharashtra',
+        images: [
+          'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg',
+          'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg',
+          'https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg'
+        ],
+        host: { 
+          _id: '1', 
+          name: 'Rajesh Kumar',
+          email: 'rajesh@stayfinder.in'
+        },
+        amenities: ['WiFi', 'AC', 'Kitchen', 'Swimming Pool', 'Gym', 'Security', 'Parking', 'Sea View', 'Balcony'],
+        maxGuests: 6,
+        bedrooms: 3,
+        bathrooms: 2,
+        coordinates: { lat: 19.0596, lng: 72.8261 },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      res.json({
+        success: true,
+        message: 'Listing fetched successfully',
+        data: {
+          listing: mockListing,
+          bookedDates: []
+        }
+      });
+    });
+
+    // Mock endpoint for listings by location
+    app.get('/api/listings-mock/search', (req, res) => {
+      const { location } = req.query;
+      const allMockListings = [
+        // Mumbai properties
+        {
+          _id: '1',
+          title: 'Luxury Sea View Apartment in Bandra West',
+          price: 8500,
+          location: 'Mumbai, Maharashtra',
+          images: ['https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg'],
+          host: { name: 'Rajesh Kumar' },
+          amenities: ['WiFi', 'AC', 'Kitchen', 'Swimming Pool', 'Sea View'],
+          maxGuests: 6,
+          bedrooms: 3,
+          bathrooms: 3,
+          coordinates: { lat: 19.0596, lng: 72.8261 }
+        },
+        // Delhi properties  
+        {
+          _id: '2',
+          title: 'Heritage Haveli in Chandni Chowk',
+          price: 6500,
+          location: 'New Delhi, Delhi',
+          images: ['https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg'],
+          host: { name: 'Priya Sharma' },
+          amenities: ['WiFi', 'AC', 'Heritage Architecture', 'Courtyard'],
+          maxGuests: 8,
+          bedrooms: 4,
+          bathrooms: 3,
+          coordinates: { lat: 28.6562, lng: 77.2300 }
+        }
+      ];
+      
+      let filteredListings = allMockListings;
+      if (location) {
+        filteredListings = allMockListings.filter(listing => 
+          listing.location.toLowerCase().includes(location.toString().toLowerCase())
+        );
+      }
+      
+      res.json({
+        success: true,
+        message: `Found ${filteredListings.length} properties`,
+        data: {
+          listings: filteredListings,
+          pagination: {
+            page: 1,
+            limit: 12,
+            total: filteredListings.length,
+            pages: 1
+          }
+        }
+      });
+    });
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }
