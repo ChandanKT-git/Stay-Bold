@@ -304,25 +304,6 @@ const startServer = async () => {
         }
       });
     });
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      ];
-      
-      res.json({
-        success: true,
-        message: 'Mock listings (database not connected)',
-        data: {
-          listings: mockListings,
-          pagination: {
-            page: 1,
-            limit: 12,
-            total: 2,
-            pages: 1
-          }
-        }
-      });
-    });
 
     // Health check endpoint
     app.get('/api/health', (req, res) => {
