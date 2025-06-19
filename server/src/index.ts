@@ -18,11 +18,14 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB with proper error handling
 const startServer = async () => {
   try {
-    // Quick connection test first
+    // Test database connection (non-blocking)
+    console.log('🔍 Testing database connection...');
     await quickConnectionTest();
     
-    // Connect to database first
-    await connectDB();
+    // Try to connect to database (don't block server startup)
+    connectDB().catch(error => {
+      console.error('⚠️  Database connection failed, but server will continue');
+    });
     
     // Apply middleware in correct order for security
     // 1. CORS configuration (must be first)
@@ -67,23 +70,32 @@ const startServer = async () => {
 
     // Start the server
     app.listen(PORT, () => {
-      console.log('\n🚀 Server Status:');
-      console.log(`   ✅ Server running on port ${PORT}`);
+      console.log('\n🚀 SERVER STARTED SUCCESSFULLY!');
+      console.log(`   ✅ Port: ${PORT}`);
       console.log(`   ✅ Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`   ✅ CSP Disabled: ${process.env.DISABLE_CSP === 'true' ? 'YES' : 'NO'}`);
+      console.log(`   ✅ CSP: ${process.env.DISABLE_CSP === 'true' ? 'DISABLED' : 'ENABLED'}`);
+      console.log(`   ${mongoose.connection.readyState === 1 ? '✅' : '⚠️ '} Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
       
       if (process.env.NODE_ENV !== 'production') {
-        console.log('\n🔧 Development URLs:');
+        console.log('\n🔧 DEVELOPMENT URLS:');
         console.log(`   🌐 API Health: http://localhost:${PORT}/api/health`);
         console.log(`   🛡️  CSP Test: http://localhost:${PORT}/api/csp-test`);
         console.log(`   📋 CSP Policy: http://localhost:${PORT}/api/csp-policy`);
       }
       
-      console.log('\n📊 Ready to accept connections!\n');
+      if (mongoose.connection.readyState !== 1) {
+        console.log('\n⚠️  DATABASE CONNECTION ISSUE:');
+        console.log('   🎯 Most likely cause: IP not whitelisted in MongoDB Atlas');
+        console.log('   🚀 Quick fix: Add 0.0.0.0/0 to Network Access in MongoDB Atlas');
+        console.log('   📖 See server logs above for detailed troubleshooting');
+      }
+      
+      console.log('\n📊 SERVER READY TO ACCEPT CONNECTIONS!\n');
     });
     
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('❌ CRITICAL ERROR - Failed to start server:', error);
+    console.error('⚠️  This is a server startup issue, not a database issue');
     process.exit(1);
   }
 };
