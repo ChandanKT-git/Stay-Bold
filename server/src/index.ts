@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './config/database';
+import { connectDB, quickConnectionTest } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import { cspMiddleware, disableCSPForDevelopment, cspReportHandler } from './middleware/csp';
 import { securityHeaders, corsWithCSP } from './middleware/security';
@@ -18,6 +18,9 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB with proper error handling
 const startServer = async () => {
   try {
+    // Quick connection test first
+    await quickConnectionTest();
+    
     // Connect to database first
     await connectDB();
     
