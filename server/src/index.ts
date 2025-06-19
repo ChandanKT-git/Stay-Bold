@@ -8,6 +8,7 @@ import { securityHeaders, corsWithCSP } from './middleware/security';
 import authRoutes from './routes/auth';
 import listingRoutes from './routes/listings';
 import bookingRoutes from './routes/bookings';
+import cspRoutes from './routes/csp';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api', cspRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

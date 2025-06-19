@@ -9,16 +9,8 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Content-Security-Policy': [
-        "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-        "font-src 'self' data: https://fonts.gstatic.com",
-        "img-src 'self' data: blob: https: http:",
-        "connect-src 'self' ws: wss: https: http:",
-        "frame-src 'self'",
-        "object-src 'none'"
-      ].join('; ')
+      // Remove CSP from Vite config since it's handled by the backend
+      // This prevents conflicts between frontend and backend CSP headers
     },
     proxy: {
       '/api': {
@@ -27,4 +19,18 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Ensure proper source maps for CSP debugging
+    sourcemap: true,
+    // Optimize chunks to reduce inline script needs
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          maps: ['@react-google-maps/api'],
+        }
+      }
+    }
+  }
 });
