@@ -16,9 +16,9 @@ export const connectDB = async (): Promise<void> => {
     // MongoDB connection options optimized for Atlas
     const options = {
       // Connection timeouts
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-      connectTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 45000, // 45 seconds
+      serverSelectionTimeoutMS: 5000, // 5 seconds
+      connectTimeoutMS: 5000, // 5 seconds
+      socketTimeoutMS: 20000, // 20 seconds
       
       // Buffer settings
       bufferCommands: false,
@@ -52,7 +52,13 @@ export const connectDB = async (): Promise<void> => {
     // Connect to MongoDB with proper error handling
     console.log('⏳ Connecting to MongoDB Atlas...');
     
-    await mongoose.connect(mongoURI, options);
+    // Set a timeout for the connection attempt
+    const connectionPromise = mongoose.connect(mongoURI, options);
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timeout after 8 seconds')), 8000);
+    });
+    
+    await Promise.race([connectionPromise, timeoutPromise]);
     
     console.log('✅ MongoDB connected successfully!');
     console.log(`📊 Database: ${mongoose.connection.db?.databaseName || 'stayfinder'}`);
@@ -74,16 +80,20 @@ export const connectDB = async (): Promise<void> => {
       console.log('   2. Verify MongoDB Atlas cluster is running');
       console.log('   3. Confirm IP whitelist includes 0.0.0.0/0');
       console.log('   4. Check if your network blocks MongoDB ports');
+      console.log('   5. Try restarting your MongoDB Atlas cluster');
+      console.log('   6. Verify cluster region is accessible from your location');
     } else if (error.message.includes('authentication') || error.message.includes('auth')) {
       console.log('\n💡 AUTHENTICATION ISSUES - Try these solutions:');
       console.log('   1. Verify username and password in connection string');
       console.log('   2. Check if user has proper database permissions');
       console.log('   3. Ensure password is URL-encoded (% symbols)');
+      console.log('   4. Try creating a new database user');
     } else if (error.message.includes('parse') || error.message.includes('URI')) {
       console.log('\n💡 CONNECTION STRING ISSUES - Try these solutions:');
       console.log('   1. Check connection string format');
       console.log('   2. Ensure all special characters are URL-encoded');
       console.log('   3. Verify cluster name and region');
+      console.log('   4. Get a fresh connection string from MongoDB Atlas');
     }
     
     console.log('\n🔧 QUICK FIXES TO TRY:');
@@ -91,6 +101,8 @@ export const connectDB = async (): Promise<void> => {
     console.log('   2. Generate a new connection string');
     console.log('   3. Try connecting from MongoDB Compass first');
     console.log('   4. Check MongoDB Atlas status page');
+    console.log('   5. Add 0.0.0.0/0 to Network Access (allow all IPs)');
+    console.log('   6. Ensure cluster is not paused/sleeping');
     
     console.log('\n⚠️  Server will continue without database connection');
   }

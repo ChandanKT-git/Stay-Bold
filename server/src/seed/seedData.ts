@@ -1166,7 +1166,22 @@ const indianListings = [
 
 const seedDatabase = async () => {
   try {
+    console.log('🌱 Starting database seeding process...');
+    
+    // Add timeout for connection
+    const connectionTimeout = setTimeout(() => {
+      console.log('❌ Database connection timeout - exiting seed process');
+      process.exit(1);
+    }, 15000); // 15 second timeout
+    
     await connectDB();
+    clearTimeout(connectionTimeout);
+    
+    // Check if actually connected
+    if (mongoose.connection.readyState !== 1) {
+      console.log('❌ Database not connected - cannot seed');
+      process.exit(1);
+    }
     
     // Clear existing data
     await User.deleteMany({});
