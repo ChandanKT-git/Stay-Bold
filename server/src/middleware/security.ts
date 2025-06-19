@@ -17,6 +17,9 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   // Referrer Policy - Control referrer information
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   
+  // Remove server information
+  res.removeHeader('X-Powered-By');
+  
   // Permissions Policy - Control browser features
   res.setHeader('Permissions-Policy', [
     'camera=()',
@@ -33,6 +36,10 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
+  
+  // Additional security headers
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('X-Download-Options', 'noopen');
   
   // Cross-Origin policies for WebContainer compatibility
   if (process.env.NODE_ENV !== 'production') {

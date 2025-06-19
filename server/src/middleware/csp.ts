@@ -8,28 +8,28 @@ export const cspMiddleware = (req: Request, res: Response, next: NextFunction) =
   res.removeHeader('Content-Security-Policy-Report-Only');
   
   if (isDevelopment) {
-    // Very permissive CSP for development to allow all WebContainer functionality
+    // Development CSP - More restrictive while maintaining functionality
     const developmentCSP = [
-      "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: ws: wss: https: http:",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https: http:",
-      "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https: http:",
-      "style-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http:",
-      "style-src-elem 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http:",
-      "font-src 'self' 'unsafe-inline' data: blob: https: http:",
-      "img-src 'self' data: blob: https: http:",
-      "connect-src 'self' ws: wss: https: http: blob: data:",
-      "frame-src 'self' blob: data: https: http:",
-      "worker-src 'self' blob: data: https: http:",
-      "child-src 'self' blob: data: https: http:",
-      "object-src 'self' data: blob:",
-      "media-src 'self' data: blob: https: http:",
-      "manifest-src 'self' data: blob:",
-      "base-uri 'self' data: blob:",
-      "form-action 'self' https: http:"
+      "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: ws: wss:",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https://maps.googleapis.com https://maps.gstatic.com",
+      "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: data: ws: wss: https://maps.googleapis.com https://maps.gstatic.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com",
+      "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com",
+      "font-src 'self' data: blob: https://fonts.gstatic.com",
+      "img-src 'self' data: blob: https://images.pexels.com https://maps.googleapis.com https://maps.gstatic.com",
+      "connect-src 'self' ws: wss: https://api.stripe.com https://maps.googleapis.com",
+      "frame-src 'self' blob: https://js.stripe.com",
+      "worker-src 'self' blob:",
+      "child-src 'self' blob:",
+      "object-src 'none'",
+      "media-src 'self' data: blob:",
+      "manifest-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'"
     ].join('; ');
     
     res.setHeader('Content-Security-Policy', developmentCSP);
-    console.log('Applied development CSP:', developmentCSP);
+    console.log('Applied improved development CSP');
   } else {
     // Production CSP with nonce support
     const nonce = generateNonce();
