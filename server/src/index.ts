@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import { connectDB, quickConnectionTest } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import { cspMiddleware, disableCSPForDevelopment, cspReportHandler } from './middleware/csp';
@@ -74,7 +75,11 @@ const startServer = async () => {
       console.log(`   ✅ Port: ${PORT}`);
       console.log(`   ✅ Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`   ✅ CSP: ${process.env.DISABLE_CSP === 'true' ? 'DISABLED' : 'ENABLED'}`);
-      console.log(`   ${mongoose.connection.readyState === 1 ? '✅' : '⚠️ '} Database: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+      
+      // Check database connection status
+      const dbStatus = mongoose.connection.readyState;
+      const dbStatusText = dbStatus === 1 ? 'Connected' : dbStatus === 2 ? 'Connecting' : dbStatus === 3 ? 'Disconnecting' : 'Disconnected';
+      console.log(`   ${dbStatus === 1 ? '✅' : '⚠️ '} Database: ${dbStatusText}`);
       
       if (process.env.NODE_ENV !== 'production') {
         console.log('\n🔧 DEVELOPMENT URLS:');
@@ -83,7 +88,7 @@ const startServer = async () => {
         console.log(`   📋 CSP Policy: http://localhost:${PORT}/api/csp-policy`);
       }
       
-      if (mongoose.connection.readyState !== 1) {
+      if (dbStatus !== 1) {
         console.log('\n⚠️  DATABASE CONNECTION ISSUE:');
         console.log('   🎯 Most likely cause: IP not whitelisted in MongoDB Atlas');
         console.log('   🚀 Quick fix: Add 0.0.0.0/0 to Network Access in MongoDB Atlas');

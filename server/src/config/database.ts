@@ -35,7 +35,7 @@ export const connectDB = async (): Promise<void> => {
       maxIdleTimeMS: 30000,
       
       // Family preference (try IPv4 first, then IPv6)
-      family: 0, // 0 = auto, 4 = IPv4 only, 6 = IPv6 only
+      family: 4, // Use IPv4 only to avoid the family error
       
       // Additional connection options
       useNewUrlParser: true,
@@ -166,7 +166,7 @@ export const quickConnectionTest = async (): Promise<void> => {
       serverSelectionTimeoutMS: 2000, // 2 seconds - very short
       connectTimeoutMS: 3000, // 3 seconds
       socketTimeoutMS: 5000, // 5 seconds
-      family: 0 // Try both IPv4 and IPv6
+      family: 4 // Use IPv4 only
     });
     
     await testConnection.close();
