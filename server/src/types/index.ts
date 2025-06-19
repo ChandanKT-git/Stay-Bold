@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 // Booking status type
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
@@ -33,15 +33,15 @@ export interface IListing extends Document {
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;
-  host: string;
+  host: Types.ObjectId | string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface IBooking extends Document {
   _id: string;
-  listing: string;
-  guest: string;
+  listing: Types.ObjectId | string;
+  guest: Types.ObjectId | string;
   startDate: Date;
   endDate: Date;
   totalPrice: number;
