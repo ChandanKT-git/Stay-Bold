@@ -16,9 +16,9 @@ export const connectDB = async (): Promise<void> => {
     // MongoDB connection options optimized for Atlas
     const options = {
       // Connection timeouts
-      serverSelectionTimeoutMS: 5000, // 5 seconds
-      connectTimeoutMS: 5000, // 5 seconds
-      socketTimeoutMS: 20000, // 20 seconds
+      serverSelectionTimeoutMS: 15000, // 15 seconds
+      connectTimeoutMS: 15000, // 15 seconds
+      socketTimeoutMS: 30000, // 30 seconds
       
       // Buffer settings
       bufferCommands: false,
@@ -31,10 +31,6 @@ export const connectDB = async (): Promise<void> => {
       
       // Use IPv4 to avoid family errors
       family: 4,
-      
-      // Additional Atlas-specific options
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       
       // Authentication
       authSource: 'admin',
@@ -55,7 +51,7 @@ export const connectDB = async (): Promise<void> => {
     // Set a timeout for the connection attempt
     const connectionPromise = mongoose.connect(mongoURI, options);
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Connection timeout after 8 seconds')), 8000);
+      setTimeout(() => reject(new Error('Connection timeout after 20 seconds')), 20000);
     });
     
     await Promise.race([connectionPromise, timeoutPromise]);
@@ -82,6 +78,8 @@ export const connectDB = async (): Promise<void> => {
       console.log('   4. Check if your network blocks MongoDB ports');
       console.log('   5. Try restarting your MongoDB Atlas cluster');
       console.log('   6. Verify cluster region is accessible from your location');
+      console.log('   7. Try using a VPN if your ISP blocks MongoDB');
+      console.log('   8. Check if you\'re behind a corporate firewall');
     } else if (error.message.includes('authentication') || error.message.includes('auth')) {
       console.log('\n💡 AUTHENTICATION ISSUES - Try these solutions:');
       console.log('   1. Verify username and password in connection string');
@@ -103,6 +101,8 @@ export const connectDB = async (): Promise<void> => {
     console.log('   4. Check MongoDB Atlas status page');
     console.log('   5. Add 0.0.0.0/0 to Network Access (allow all IPs)');
     console.log('   6. Ensure cluster is not paused/sleeping');
+    console.log('   7. Try creating a new cluster in a different region');
+    console.log('   8. Test connection with MongoDB Compass first');
     
     console.log('\n⚠️  Server will continue without database connection');
   }
